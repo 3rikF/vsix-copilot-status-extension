@@ -1,0 +1,45 @@
+<UserControl
+	x:Class				="VSIXTestProject.GitHubStatusBarControl"
+	xmlns				="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x				="http://schemas.microsoft.com/winfx/2006/xaml"
+
+	xmlns:mc			="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:d				="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:sys			="clr-namespace:System;assembly=netstandard"
+	xmlns:vsshell		="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
+	mc:Ignorable		="d"
+	d:DesignHeight		="25"
+	d:DesignWidth		="80"
+	>
+
+	<UserControl.Style>
+		<Style TargetType="UserControl">
+			<Setter Property="Background" Value="Transparent" />
+			<Style.Triggers>
+				<Trigger Property="IsMouseOver" Value="True">
+					<Setter Property="Background" Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarOptionsMouseDownBackgroundHorizontalGradientKey}}" />
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+	</UserControl.Style>
+
+	<StackPanel
+		Orientation		="Horizontal"
+		>
+
+		<TextBlock
+			x:Name				="StatusTextBlock"
+			VerticalAlignment	="Center"
+			d:Text				="🤖 Copilot | ⚡ 4823/5000 | 🔍 28/30"
+			Margin				="8,0"
+			>
+
+			<TextBlock.ToolTip>
+				<TextBlock
+					x:Name="StatusToolTip"
+					/>
+			</TextBlock.ToolTip>
+
+		</TextBlock>
+	</StackPanel>
+</UserControl>
