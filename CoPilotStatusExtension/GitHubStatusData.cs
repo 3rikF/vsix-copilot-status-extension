@@ -4,7 +4,7 @@ using System;
 using Microsoft.VisualStudio.OLE.Interop;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-namespace VSIXTestProject;
+namespace CoPilotStatusExtension;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 public sealed record class GitHubStatusData

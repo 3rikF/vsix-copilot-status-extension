@@ -1,7 +1,7 @@
 using System.Text;
 using System.Windows.Controls;
 
-namespace VSIXTestProject;
+namespace CoPilotStatusExtension;
 
 public partial class GitHubStatusBarControl : UserControl
 {
