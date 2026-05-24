@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-namespace VSIXTestProject;
+namespace CoPilotStatusExtension;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 internal sealed class GitHubApiService
