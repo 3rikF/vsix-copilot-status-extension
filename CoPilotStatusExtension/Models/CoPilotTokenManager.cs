@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.Threading;
 using ExportProvider = System.ComponentModel.Composition.Hosting.ExportProvider;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-namespace CoPilotStatusExtension;
+namespace CoPilotStatusExtension.Models;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 public sealed class CoPilotTokenManager : IDisposable
@@ -21,17 +21,15 @@ public sealed class CoPilotTokenManager : IDisposable
 	private object? _cpTokenManager;
 	private EventHandler? _cpIdentityChangedHandler;
 	private readonly IComponentModel? _componentModel;
-	private readonly JoinableTaskFactory _joinableTaskFactory;
 
 	#endregion Fields
 
 	//-----------------------------------------------------------------------------------------------------------------
 	#region Construction
 
-	public CoPilotTokenManager(IComponentModel? componentModel, JoinableTaskFactory joinableTaskFactor)
+	public CoPilotTokenManager(IComponentModel? componentModel)
 	{
-		_componentModel			= componentModel;
-		_joinableTaskFactory		= joinableTaskFactor;
+		_componentModel = componentModel;
 	}
 
 	#endregion Construction

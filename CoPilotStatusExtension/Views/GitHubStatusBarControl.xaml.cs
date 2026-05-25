@@ -1,8 +1,14 @@
+
 using System.Text;
 using System.Windows.Controls;
 
-namespace CoPilotStatusExtension;
+using CoPilotStatusExtension.GitHubApiModels;
+using CoPilotStatusExtension.Models;
 
+//-----------------------------------------------------------------------------------------------------------------------------------------
+namespace CoPilotStatusExtension.Views;
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
 public partial class GitHubStatusBarControl : UserControl
 {
 	private GitHubStatusData? _statusData;
@@ -65,6 +71,8 @@ public partial class GitHubStatusBarControl : UserControl
 			.AppendLine($"User:			{data.GitHubUsername}")
 			.AppendLine($"Subscription:		{data.SubscriptionType}")
 			.AppendLine($"Account type:		{(data.IsEnterprise == true ? "Enterprise" : data.IsIndividual == true ? "Individual" : "Unknown")}")
+			.AppendLine($"Organizations:		{(data.OrganizationList != null ? string.Join(", ", data.OrganizationList) : "None")}")
+			.AppendLine($"Enterprises:		{(data.EnterpriseList != null ? string.Join(", ", data.EnterpriseList) : "None")}")
 			.AppendLine()
 			.AppendLine($"Chat:			{FormatBool(data.ChatEnabled)}")
 			.AppendLine($"Completions:		{FormatBool(data.CompletionsEnabled)}")
@@ -73,7 +81,8 @@ public partial class GitHubStatusBarControl : UserControl
 			.AppendLine($"Editor preview:		{FormatBool(data.EditorPreviewFeaturesEnabled)}")
 			.AppendLine($"Code quote:		{FormatBool(data.CodeQuoteEnabled)}")
 			.AppendLine($"Chat JetBrains:		{FormatBool(data.ChatJetbrainsEnabled)}")
-			.AppendLine($"Copilot exclusion:		{FormatBool(data.CopilotExclusion)}");
+			.AppendLine($"Copilot exclusion A:		{FormatBool(data.CopilotExclusion)}")
+			.AppendLine($"Copilot exclusion B:		{FormatBool(data.CopilotExclusionEnabled)}");
 
 		if (data.OrganizationList?.Length > 0)
 			_ = sb.AppendLine($"Organizations:		{string.Join(", ", data.OrganizationList)}");
@@ -81,10 +90,12 @@ public partial class GitHubStatusBarControl : UserControl
 		if (data.EnterpriseList?.Length > 0)
 			_ = sb.AppendLine($"Enterprises:		{string.Join(", ", data.EnterpriseList)}");
 
-		//--- Chat Statistics -------------------------------------------------
+		//--- Personal Metrics ------------------------------------------------
 		if (data.PersonalMetrics is not null)
 		{
-			_ = sb.AppendLine().AppendLine("Quota Snapshot:");
+			_ = sb
+				.AppendLine()
+				.AppendLine("Personal Metrics:");
 
 			if (data.PersonalMetrics.ErrorMessage is not null)
 				_ = sb.AppendLine($"  Error: [{data.PersonalMetrics.ErrorMessage}]");
@@ -106,6 +117,16 @@ public partial class GitHubStatusBarControl : UserControl
 				_ = sb.Append(GetQuotaDetailToolTip("Completions", data.PersonalMetrics.QuotaSnapshots.Completions));
 			else
 				_ = sb.AppendLine($"  Completions: [No data]");
+		}
+
+		//--- Organization Metrics --------------------------------------------
+		if (data.OrganizationMetrics is not null)
+		{
+			_ = sb.AppendLine().AppendLine("Organization Metrics:");
+			if (data.OrganizationMetrics.ErrorMessage is not null)
+				_ = sb.AppendLine($"  Error: [{data.OrganizationMetrics.ErrorMessage}]");
+
+			//--- premium quota ---------------------------
 		}
 
 		//--- return result ---------------------------------------------------

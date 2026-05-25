@@ -13,7 +13,7 @@
     <ProjectCapability Include="CreateVsixContainer" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="GitHubStatusBarControl.xaml" />
+    <Page Include="Views\GitHubStatusBarControl.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -27,7 +27,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" ExcludeAssets="runtime" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="GitHubStatusBarControl.xaml">
+    <None Update="Views\GitHubStatusBarControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
   </ItemGroup>

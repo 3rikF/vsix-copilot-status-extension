@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,6 +8,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+
+using CoPilotStatusExtension.GitHubApiModels;
+using CoPilotStatusExtension.Models;
+using CoPilotStatusExtension.Views;
 
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
@@ -124,7 +129,7 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 
 		if (GetGlobalService(typeof(SComponentModel)) is  IComponentModel componentModel)
 		{
-			_tokenManager = new CoPilotTokenManager(componentModel, JoinableTaskFactory);
+			_tokenManager = new CoPilotTokenManager(componentModel);
 
 			//--- initialize MEF end register [CopilotIdentityChanged] event-handler ---
 			_tokenManager.InitializeCopilotMef(OnMainWindowActivated);
@@ -179,19 +184,53 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 
 				}
 
-				//--- Chat ------------------------------------------------------------------------
-				CopilotChatStatistics chaStats = await _gitHubService
-					.FetchUserChatUsageAsync(status.GitHubUsername, status.GitHubPassword)
-					.ConfigureAwait(false);
-
-				if (chaStats.ErrorMessage is null)
+				//--- Personal Metrics ------------------------------------------------------------
+				if (status.IsIndividual == true)
 				{
-					status = status with
+					CopilotChatStatistics personalMetrics = await _gitHubService
+						.FetchUserChatUsageAsync(status.GitHubUsername, status.GitHubPassword)
+						.ConfigureAwait(false);
+
+					if (personalMetrics.ErrorMessage is null)
 					{
-						PersonalMetrics = chaStats,
-					};
+						status = status with
+						{
+							PersonalMetrics = personalMetrics,
+						};
+					}
 				}
 
+				//--- Organization Metrics -----------------------------------------------
+				if (status.IsEnterprise == true && status.OrganizationList?.Length > 0)
+				{
+					PremiumRequestUsageResult orgMetrics = await _gitHubService
+						.FetchOrgPremiumRequestUsageAsync(status.OrganizationList.First(), status.GitHubPassword, DateTime.Now.Year)
+						.ConfigureAwait(false);
+
+					if (orgMetrics.ErrorMessage is null)
+					{
+						status = status with
+						{
+							OrganizationMetrics = orgMetrics,
+						};
+					}
+				}
+
+				//--- Enterprise Metrics ----------------------------------------------------------
+				//if (status.IsEnterprise == true)
+				//{
+				//	OrgCopilotMetricsResult orgMetrics = await _gitHubService
+				//		.FetchOrgCopilotMetricsAsync("", status.GitHubPassword)
+				//		.ConfigureAwait(false);
+				//
+				//	if (orgMetrics.ErrorMessage is null)
+				//	{
+				//		status = status with
+				//		{
+				//			EnterpriseMetrics = orgMetrics,
+				//		};
+				//	}
+				//}
 
 				//--- Update Status UI ------------------------------------------------------------
 				await JoinableTaskFactory.SwitchToMainThreadAsync();

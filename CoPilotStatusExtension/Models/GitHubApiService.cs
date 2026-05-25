@@ -1,15 +1,19 @@
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+
+using CoPilotStatusExtension.GitHubApiModels;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-namespace CoPilotStatusExtension;
+namespace CoPilotStatusExtension.Models;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 internal sealed class GitHubApiService
@@ -201,6 +205,121 @@ internal sealed class GitHubApiService
 		result.CopilotPlan			= response?.CopilotPlan;
 		result.QuotaResetDate		= response?.QuotaResetDate;
 		result.QuotaResetDateUtc	= response?.QuotaResetDateUtc;
+
+		return result;
+	}
+
+	//public async Task<OrgCopilotMetricsResult> FetchOrgCopilotMetricsAsync(
+	//	string org,
+	//	string token,
+	//	DateTime? since = null,
+	//	DateTime? until = null)
+	//{
+	//	DateTime untilValue		= until ?? DateTime.UtcNow;
+	//	DateTime sinceValue		= since ?? untilValue.AddDays(-27); // 28-day window, matching TS logic
+	//
+	//	string sinceUtc = sinceValue.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
+	//	string untilUtc = untilValue.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ");
+	//
+	//	string url = $"https://api.github.com/orgs/{Uri.EscapeDataString(org)}/copilot/metrics" +
+	//				 $"?since={Uri.EscapeDataString(sinceUtc)}" +
+	//				 $"&until={Uri.EscapeDataString(untilUtc)}" +
+	//				 $"&per_page=28";
+	//
+	//	using HttpRequestMessage req	= BuildRequest(HttpMethod.Get, url, token);
+	//	using HttpResponseMessage res	= await HttpClientInstance.SendAsync(req).ConfigureAwait(false);
+	//
+	//	string json = await res.Content.ReadAsStringAsync().ConfigureAwait(false);
+	//
+	//	OrgCopilotMetricsResult result = new()
+	//	{
+	//		Since = sinceUtc,
+	//		Until = untilUtc
+	//	};
+	//
+	//	if (!res.IsSuccessStatusCode)
+	//	{
+	//		result.ErrorMessage = $"HTTP {(int)res.StatusCode}: {res.ReasonPhrase}";
+	//		return result;
+	//	}
+	//
+	//	List<OrgMetricsDay>? data = JsonConvert.DeserializeObject<List<OrgMetricsDay>>(json) ?? [];
+	//
+	//	result.Days = data.Count;
+	//
+	//	foreach (OrgMetricsDay day in data)
+	//	{
+	//		result.EngagedUsersSum += day.TotalEngagedUsers ?? 0;
+	//
+	//		if (day.CopilotIdeCodeCompletions?.Editors is null)
+	//			continue;
+	//
+	//		foreach (OrgEditorMetrics editor in day.CopilotIdeCodeCompletions.Editors)
+	//		{
+	//			if (editor.Models is null)
+	//				continue;
+	//
+	//			foreach (OrgModelMetrics model in editor.Models)
+	//			{
+	//				if (model.Languages is null)
+	//					continue;
+	//
+	//				foreach (OrgLanguageMetrics language in model.Languages)
+	//					result.CodeSuggestionsSum += language.TotalCodeSuggestions ?? 0;
+	//			}
+	//		}
+	//	}
+	//
+	//	return result;
+	//}
+
+	public async Task<PremiumRequestUsageResult> FetchOrgPremiumRequestUsageAsync(
+		string org,
+		string token,
+		int? year = null,
+		int? month = null,
+		int? day = null,
+		int? hour = null)
+	{
+		string url = $"https://api.github.com/organizations/{Uri.EscapeDataString(org)}/settings/billing/premium_request/usage";
+
+		List<string> query = [];
+
+		if (year.HasValue)	query.Add($"year={year.Value}");
+		if (month.HasValue)	query.Add($"month={month.Value}");
+		if (day.HasValue)	query.Add($"day={day.Value}");
+		if (hour.HasValue)	query.Add($"hour={hour.Value}");
+
+		if (query.Count > 0)
+			url += "?" + string.Join("&", query);
+
+		using HttpRequestMessage req	= BuildRequest(HttpMethod.Get, url, token);
+		using HttpResponseMessage res	= await HttpClientInstance.SendAsync(req).ConfigureAwait(false);
+
+		string json						= await res.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+		PremiumRequestUsageResult result = new();
+
+		if (!res.IsSuccessStatusCode)
+		{
+			result.ErrorMessage = $"HTTP {(int)res.StatusCode}: {res.ReasonPhrase}";
+			return result;
+		}
+
+		OrgPremiumRequestUsageResponse response = JsonConvert.DeserializeObject<OrgPremiumRequestUsageResponse>(json)
+			?? new OrgPremiumRequestUsageResponse();
+
+		List<PremiumRequestUsageItem> copilotItems = response
+			.UsageItems
+			?.Where(x => string.Equals(x.Product, "Copilot", StringComparison.OrdinalIgnoreCase))
+			.ToList()
+			?? [];
+
+		result.TotalQuantity	= copilotItems.Sum(x => x.GrossQuantity ?? 0);
+		result.IncludedQuantity	= copilotItems.Sum(x => x.DiscountQuantity ?? 0);
+		result.OverageQuantity	= copilotItems.Sum(x => x.NetQuantity ?? 0);
+		result.TotalNetAmount	= copilotItems.Sum(x => x.NetAmount ?? 0m);
+		result.Items			= copilotItems;
 
 		return result;
 	}

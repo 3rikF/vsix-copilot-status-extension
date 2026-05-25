@@ -1,10 +1,12 @@
 
 using System;
 
+using CoPilotStatusExtension.GitHubApiModels;
+
 using Microsoft.VisualStudio.OLE.Interop;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-namespace CoPilotStatusExtension;
+namespace CoPilotStatusExtension.Models;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 public sealed record class GitHubStatusData
@@ -41,8 +43,10 @@ public sealed record class GitHubStatusData
 	public string?	ErrorMessage				{ get; set; }
 
 	//--- Billing Usage (from GitHub API) -----------------------------------------------------
-	public CopilotBillingUsage? BillingUsage	{ get; set; }
-	public CopilotChatStatistics? PersonalMetrics { get; set; }
+	public CopilotBillingUsage? BillingUsage				{ get; set; }
+	public CopilotChatStatistics? PersonalMetrics			{ get; set; }
+	//public OrgCopilotMetricsResult EnterpriseMetrics		{ get; internal set; }
+	public PremiumRequestUsageResult OrganizationMetrics	{ get; set; }
 
 	//--- additional info in AuthInfo:
 	// AuthInfo
