@@ -115,7 +115,7 @@ public sealed class CoPilotTokenManager : IDisposable
 			AnnotationsEnabled				= GetProperty<bool?>(authInfo, "AnnotationsEnabled"),
 			CodeQuoteEnabled				= GetProperty<bool?>(authInfo, "CodeQuoteEnabled"),
 			ChatJetbrainsEnabled			= GetProperty<bool?>(authInfo, "ChatJetbrainsEnabled"),
-			CopilotExclusion				= GetProperty<bool?>(authInfo, "CopilotExclusion"),
+			CopilotExclusion				= GetProperty<bool?>(authInfo, "CopilotExclusion"),3
 		};
 
 		if (GetProperty<object>(authInfo, "TokenEnvelope") is object tokenEnvelope)
@@ -125,7 +125,6 @@ public sealed class CoPilotTokenManager : IDisposable
 			status.ChatJetbrainsEnabled		= GetProperty<bool?>(tokenEnvelope, "ChatJetbrainsEnabled");
 			status.CodeQuoteEnabled			= GetProperty<bool?>(tokenEnvelope, "CodeQuoteEnabled");
 			status.CopilotExclusionEnabled	= GetProperty<bool?>(tokenEnvelope, "CopilotExclusionEnabled");
-			status.CopilotExclusion			= GetProperty<bool?>(tokenEnvelope, "CopilotExclusion");
 			status.ErrorDetails				= GetProperty<object>(tokenEnvelope, "ErrorDetails");
 			long expiresAt					= GetProperty<long>(tokenEnvelope, "ExpiresAt");
 			status.ExpiresAt				= DateTimeOffset.FromUnixTimeSeconds(expiresAt).ToLocalTime().DateTime;

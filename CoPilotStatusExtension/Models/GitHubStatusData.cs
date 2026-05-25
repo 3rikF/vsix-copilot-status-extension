@@ -37,8 +37,8 @@ public sealed record class GitHubStatusData
 	public string GitHubUsername				{ get; set; } = string.Empty;
 	public string GitHubPassword				{ get; set; } = string.Empty;	// aka GitHubToken
 	public string SubscriptionType				{ get; set; } = string.Empty;	// yearly_subscriber_quota, copilot_for_business_seat_quota..
-	public string[] OrganizationList			{ get; set; } = [];
-	public string[] EnterpriseList				{ get; set; } = [];
+	public string[]? OrganizationList			{ get; set; }
+	public string[]? EnterpriseList				{ get; set; }
 
 	public string?	ErrorMessage				{ get; set; }
 

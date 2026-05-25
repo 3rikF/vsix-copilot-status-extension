@@ -81,8 +81,8 @@ public partial class GitHubStatusBarControl : UserControl
 			.AppendLine($"Editor preview:		{FormatBool(data.EditorPreviewFeaturesEnabled)}")
 			.AppendLine($"Code quote:		{FormatBool(data.CodeQuoteEnabled)}")
 			.AppendLine($"Chat JetBrains:		{FormatBool(data.ChatJetbrainsEnabled)}")
-			.AppendLine($"Copilot exclusion A:		{FormatBool(data.CopilotExclusion)}")
-			.AppendLine($"Copilot exclusion B:		{FormatBool(data.CopilotExclusionEnabled)}");
+			.AppendLine($"Copilot exclusion A:	{FormatBool(data.CopilotExclusion)}")
+			.AppendLine($"Copilot exclusion B:	{FormatBool(data.CopilotExclusionEnabled)}");
 
 		if (data.OrganizationList?.Length > 0)
 			_ = sb.AppendLine($"Organizations:		{string.Join(", ", data.OrganizationList)}");
