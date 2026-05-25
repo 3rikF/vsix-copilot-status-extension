@@ -22,9 +22,10 @@ public sealed record class GitHubStatusData
 	//public bool? ChatEnabled					{ get; set; } ... again ...
 	public bool? ChatJetbrainsEnabled			{ get; set; }
 	public bool? CodeQuoteEnabled				{ get; set; }
-	public bool? CopilotExclusionEnabled		{ get; set; }
 
+	public bool? CopilotExclusionEnabled		{ get; set; }
 	public bool? CopilotExclusion				{ get; set; }
+
 	public object? ErrorDetails					{ get; set; }
 	public DateTime ExpiresAt					{ get; set; }
 
@@ -37,15 +38,11 @@ public sealed record class GitHubStatusData
 	public string[] OrganizationList			{ get; set; } = [];
 	public string[] EnterpriseList				{ get; set; } = [];
 
-	//public int		CoreRemaining			{ get; set; }
-	//public int		CoreLimit				{ get; set; }
-	//public int		SearchRemaining			{ get; set; }
-	//public int		SearchLimit				{ get; set; }
 	public string?	ErrorMessage				{ get; set; }
 
 	//--- Billing Usage (from GitHub API) -----------------------------------------------------
 	public CopilotBillingUsage? BillingUsage	{ get; set; }
-	public CopilotChatStatistics? ChatStatistics { get; set; }
+	public CopilotChatStatistics? PersonalMetrics { get; set; }
 
 	//--- additional info in AuthInfo:
 	// AuthInfo

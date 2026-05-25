@@ -45,8 +45,8 @@ public partial class GitHubStatusBarControl : UserControl
 		{
 
 
-			if (data.ChatStatistics?.QuotaSnapshots?.PremiumInteractions?.PercentRemaining is not null)
-				return $"{data.GitHubUsername}: {data.ChatStatistics.QuotaSnapshots.PremiumInteractions.PercentRemaining:F1}%";
+			if (data.PersonalMetrics?.QuotaSnapshots?.PremiumInteractions?.PercentRemaining is not null)
+				return $"{data.GitHubUsername}: {data.PersonalMetrics.QuotaSnapshots.PremiumInteractions.PercentRemaining:F1}%";
 			else
 				return $"{data.GitHubUsername}: ...%";
 		}
@@ -82,28 +82,28 @@ public partial class GitHubStatusBarControl : UserControl
 			_ = sb.AppendLine($"Enterprises:		{string.Join(", ", data.EnterpriseList)}");
 
 		//--- Chat Statistics -------------------------------------------------
-		if (data.ChatStatistics is not null)
+		if (data.PersonalMetrics is not null)
 		{
 			_ = sb.AppendLine().AppendLine("Quota Snapshot:");
 
-			if (data.ChatStatistics.ErrorMessage is not null)
-				_ = sb.AppendLine($"  Error: [{data.ChatStatistics.ErrorMessage}]");
+			if (data.PersonalMetrics.ErrorMessage is not null)
+				_ = sb.AppendLine($"  Error: [{data.PersonalMetrics.ErrorMessage}]");
 
 			//--- premium quota ---------------------------
-			if (data.ChatStatistics.QuotaSnapshots?.PremiumInteractions is not null)
-				_ = sb.Append(GetQuotaDetailToolTip("Premium Interactions", data.ChatStatistics.QuotaSnapshots.PremiumInteractions));
+			if (data.PersonalMetrics.QuotaSnapshots?.PremiumInteractions is not null)
+				_ = sb.Append(GetQuotaDetailToolTip("Premium Interactions", data.PersonalMetrics.QuotaSnapshots.PremiumInteractions));
 			else
 				_ = sb.AppendLine($"  Premium Interactions: [No data]");
 
 			//--- Chat Interactions -----------------------
-			if (data.ChatStatistics.QuotaSnapshots?.Chat is not null)
-				_ = sb.Append(GetQuotaDetailToolTip("Chat Interactions", data.ChatStatistics.QuotaSnapshots.Chat));
+			if (data.PersonalMetrics.QuotaSnapshots?.Chat is not null)
+				_ = sb.Append(GetQuotaDetailToolTip("Chat Interactions", data.PersonalMetrics.QuotaSnapshots.Chat));
 			else
 				_ = sb.AppendLine($"  Chat Interactions: [No data]");
 
 			//--- Completions -----------------------------
-			if (data.ChatStatistics.QuotaSnapshots?.Completions is not null)
-				_ = sb.Append(GetQuotaDetailToolTip("Completions", data.ChatStatistics.QuotaSnapshots.Completions));
+			if (data.PersonalMetrics.QuotaSnapshots?.Completions is not null)
+				_ = sb.Append(GetQuotaDetailToolTip("Completions", data.PersonalMetrics.QuotaSnapshots.Completions));
 			else
 				_ = sb.AppendLine($"  Completions: [No data]");
 		}

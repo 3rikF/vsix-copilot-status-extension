@@ -188,7 +188,7 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 				{
 					status = status with
 					{
-						ChatStatistics = chaStats,
+						PersonalMetrics = chaStats,
 					};
 				}
 
