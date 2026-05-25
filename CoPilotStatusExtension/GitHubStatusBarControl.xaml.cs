@@ -42,7 +42,14 @@ public partial class GitHubStatusBarControl : UserControl
 			return "GitHub Copilot: Not signed in";
 
 		else if (data.Status == "OK")
-			return $"{data.GitHubUsername} ({data.SubscriptionType})";
+		{
+
+
+			if (data.ChatStatistics?.QuotaSnapshots?.PremiumInteractions?.PercentRemaining is not null)
+				return $"{data.GitHubUsername}: {data.ChatStatistics.QuotaSnapshots.PremiumInteractions.PercentRemaining:F1}%";
+			else
+				return $"{data.GitHubUsername}: ...%";
+		}
 
 		else
 			return $"Unhandled Status [{data.Status}]";
