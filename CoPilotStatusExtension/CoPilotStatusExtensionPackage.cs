@@ -43,7 +43,7 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 	#region Fields
 
 	/// <summary>
-	/// VSIXTestProjectPackage GUID string.
+	/// CoPilotStatusExtensionPackage GUID string.
 	/// </summary>
 	public const string PACKAGE_GUID_STRING = "86cc1277-85e2-4030-ba7f-ceb48452ad40";
 
