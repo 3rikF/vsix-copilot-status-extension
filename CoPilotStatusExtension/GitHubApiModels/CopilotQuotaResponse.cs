@@ -1,7 +1,12 @@
-﻿using System;
+﻿
+using System;
 
 using Newtonsoft.Json;
 
+//-----------------------------------------------------------------------------------------------------------------------------------------
+namespace CoPilotStatusExtension.GitHubApiModels;
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
 public sealed class CopilotQuotaResponse
 {
 	[JsonProperty("login")]

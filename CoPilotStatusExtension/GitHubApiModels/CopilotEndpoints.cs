@@ -1,6 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿
+using Newtonsoft.Json;
 
-public class CopilotEndpoints
+//-----------------------------------------------------------------------------------------------------------------------------------------
+namespace CoPilotStatusExtension.GitHubApiModels;
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
+public sealed class CopilotEndpoints
 {
 	[JsonProperty("api")]
 	public string Api { get; set; }

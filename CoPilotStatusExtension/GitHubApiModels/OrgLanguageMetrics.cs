@@ -1,8 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿
+using Newtonsoft.Json;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 namespace CoPilotStatusExtension.GitHubApiModels;
 
+//-----------------------------------------------------------------------------------------------------------------------------------------
 public sealed class OrgLanguageMetrics
 {
 	[JsonProperty("total_code_suggestions")]
