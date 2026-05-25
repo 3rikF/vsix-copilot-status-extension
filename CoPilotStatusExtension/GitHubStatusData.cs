@@ -43,6 +43,10 @@ public sealed record class GitHubStatusData
 	//public int		SearchLimit				{ get; set; }
 	public string?	ErrorMessage				{ get; set; }
 
+	//--- Billing Usage (from GitHub API) -----------------------------------------------------
+	public CopilotBillingUsage? BillingUsage	{ get; set; }
+	public CopilotChatStatistics? ChatStatistics { get; set; }
+
 	//--- additional info in AuthInfo:
 	// AuthInfo
 	// {
@@ -71,4 +75,33 @@ public sealed record class GitHubStatusData
 	//		TokenEndpoint	= https://api.github.com/copilot_internal/v2/token,
 	//		TelemetryStamp	= dotcom,
 	//		Host			= https://github.com/,
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
+public sealed class CopilotBillingUsage
+{
+	/// <summary>Sum of netAmount across all Copilot billing items (actual charges in USD).</summary>
+	public double TotalNetAmount		{ get; set; }
+
+	/// <summary>Total number of Copilot requests this billing period.</summary>
+	public double TotalQuantity			{ get; set; }
+
+	/// <summary>Requests covered by the included quota (derived from discountAmount / pricePerUnit).</summary>
+	public double TotalIncludedQuantity	{ get; set; }
+
+	/// <summary>Requests beyond the included quota (= TotalQuantity - TotalIncludedQuantity).</summary>
+	public double TotalOverageQuantity	{ get; set; }
+
+	/// <summary>Non-null when the API call failed.</summary>
+	public string? ErrorMessage			{ get; set; }
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
+public sealed class CopilotChatStatistics
+{
+	public string?			ErrorMessage		{ get; set; }
+	public QuotaSnapshots?	QuotaSnapshots		{ get; set; }
+	public string?			CopilotPlan			{ get; set; }
+	public string?			QuotaResetDate		{ get; set; }
+	public DateTimeOffset?	QuotaResetDateUtc	{ get; set; }
 }

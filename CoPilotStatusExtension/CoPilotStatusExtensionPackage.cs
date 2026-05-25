@@ -49,8 +49,10 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 
 	private Timer					_refreshTimer	= null!;
 	private GitHubStatusBarControl	_statusControl	= null!;
-	//private GitHubApiService		_gitHubService	= null!;
+	private GitHubApiService		_gitHubService	= null!;
 	private CoPilotTokenManager?	_tokenManager	= null;
+
+	private readonly object _syncRoot = new();
 
 	#endregion Fields
 
@@ -118,13 +120,11 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 		_ = statusBar.Items.Add(item);
 
 		//--- Initialize GitHub MEF ---------------------------------------------------------------
-		//_gitHubService	= new GitHubApiService();
+		_gitHubService	= new GitHubApiService();
 
 		if (GetGlobalService(typeof(SComponentModel)) is  IComponentModel componentModel)
 		{
 			_tokenManager = new CoPilotTokenManager(componentModel, JoinableTaskFactory);
-
-			_tokenManager.Test();
 
 			//--- initialize MEF end register [CopilotIdentityChanged] event-handler ---
 			_tokenManager.InitializeCopilotMef(OnMainWindowActivated);
@@ -150,8 +150,58 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 		if (_tokenManager is null)
 			return;
 
-		await JoinableTaskFactory.SwitchToMainThreadAsync();
-		_statusControl.StatusData = _tokenManager?.GetCurrentStatus();
+		if (!Monitor.TryEnter(_syncRoot))
+			return;
+
+		try
+		{
+			await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+			GitHubStatusData? status = _tokenManager.GetCurrentStatus();
+			_statusControl.StatusData = status;
+
+			//--- fetch billing usage if we have a username + token ---
+			if (status is not null
+				&& !string.IsNullOrEmpty(status.GitHubUsername)
+				&& !string.IsNullOrEmpty(status.GitHubPassword))
+			{
+				//--- Billing ---------------------------------------------------------------------
+				CopilotBillingUsage billing = await _gitHubService
+					.FetchUserBillingUsageAsync(status.GitHubUsername, status.GitHubPassword)
+					.ConfigureAwait(false);
+
+				if (billing.ErrorMessage is null)
+				{
+					status = status with
+					{
+						BillingUsage = billing,
+					};
+
+				}
+
+				//--- Chat ------------------------------------------------------------------------
+				CopilotChatStatistics chaStats = await _gitHubService
+					.FetchUserChatUsageAsync(status.GitHubUsername, status.GitHubPassword)
+					.ConfigureAwait(false);
+
+				if (chaStats.ErrorMessage is null)
+				{
+					status = status with
+					{
+						ChatStatistics = chaStats,
+					};
+				}
+
+
+				//--- Update Status UI ------------------------------------------------------------
+				await JoinableTaskFactory.SwitchToMainThreadAsync();
+				_statusControl.StatusData = status;
+			}
+		}
+		finally
+		{
+			Monitor.Exit(_syncRoot);
+		}
 	}
 
 	protected override void Dispose(bool disposing)
