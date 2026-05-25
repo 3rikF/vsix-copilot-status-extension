@@ -60,10 +60,8 @@ public partial class GitHubStatusBarControl : UserControl
 		if (data is null)
 			return "GitHub Copilot status is not available.";
 
-		if (data.Status != "OK")
-			return $"Error: {data.ErrorMessage ?? "Unknown error"}";
-
 		StringBuilder sb = new StringBuilder()
+			.AppendLine($"Status:			{data.Status}")
 			.AppendLine($"User:			{data.GitHubUsername}")
 			.AppendLine($"Subscription:		{data.SubscriptionType}")
 			.AppendLine($"Account type:		{(data.IsEnterprise == true ? "Enterprise" : data.IsIndividual == true ? "Individual" : "Unknown")}")
@@ -83,7 +81,54 @@ public partial class GitHubStatusBarControl : UserControl
 		if (data.EnterpriseList?.Length > 0)
 			_ = sb.AppendLine($"Enterprises:		{string.Join(", ", data.EnterpriseList)}");
 
+		//--- Chat Statistics -------------------------------------------------
+		if (data.ChatStatistics is not null)
+		{
+			_ = sb.AppendLine().AppendLine("Quota Snapshot:");
+
+			if (data.ChatStatistics.ErrorMessage is not null)
+				_ = sb.AppendLine($"  Error: [{data.ChatStatistics.ErrorMessage}]");
+
+			//--- premium quota ---------------------------
+			if (data.ChatStatistics.QuotaSnapshots?.PremiumInteractions is not null)
+				_ = sb.Append(GetQuotaDetailToolTip("Premium Interactions", data.ChatStatistics.QuotaSnapshots.PremiumInteractions));
+			else
+				_ = sb.AppendLine($"  Premium Interactions: [No data]");
+
+			//--- Chat Interactions -----------------------
+			if (data.ChatStatistics.QuotaSnapshots?.Chat is not null)
+				_ = sb.Append(GetQuotaDetailToolTip("Chat Interactions", data.ChatStatistics.QuotaSnapshots.Chat));
+			else
+				_ = sb.AppendLine($"  Chat Interactions: [No data]");
+
+			//--- Completions -----------------------------
+			if (data.ChatStatistics.QuotaSnapshots?.Completions is not null)
+				_ = sb.Append(GetQuotaDetailToolTip("Completions", data.ChatStatistics.QuotaSnapshots.Completions));
+			else
+				_ = sb.AppendLine($"  Completions: [No data]");
+		}
+
+		//--- return result ---------------------------------------------------
 		return sb.ToString().TrimEnd();
+	}
+
+	private static StringBuilder GetQuotaDetailToolTip(string title, QuotaDetail detail)
+	{
+		if (detail.Unlimited)
+		{
+			return new StringBuilder()
+				.AppendLine()
+				.AppendLine($"{title}:")
+				.AppendLine($"  Unlimited");
+		}
+		else
+		{
+			return new StringBuilder()
+				.AppendLine()
+				.AppendLine($"{title}:")
+				.AppendLine($"  Remaining:	{detail.PercentRemaining:F1}%  ({detail.QuotaRemaining} / {detail.Entitlement})")
+				.AppendLine($"  Overage:	{detail.OverageCount} (permitted: {FormatBool(detail.OveragePermitted)})");
+		}
 	}
 
 	private static string FormatBool(bool? value) => value switch

@@ -33,7 +33,7 @@ public sealed record class GitHubStatusData
 	public bool? IsEnterprise					{ get; set; }
 	public string GitHubUsername				{ get; set; } = string.Empty;
 	public string GitHubPassword				{ get; set; } = string.Empty;	// aka GitHubToken
-	public string SubscriptionType				{ get; set; } = string.Empty;	// yearly_subscriber_quota, ...
+	public string SubscriptionType				{ get; set; } = string.Empty;	// yearly_subscriber_quota, copilot_for_business_seat_quota..
 	public string[] OrganizationList			{ get; set; } = [];
 	public string[] EnterpriseList				{ get; set; } = [];
 
