@@ -1,4 +1,6 @@
 
+using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Windows.Controls;
 
@@ -9,128 +11,107 @@ using CoPilotStatusExtension.Models;
 namespace CoPilotStatusExtension.Views;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
+public enum EStatusEnum
+{
+	Unset,
+	OK,
+	NotSignedInToGitHub,
+	Unhandled,
+}
+
+public enum ESubscriptionType
+{
+	Unknown,
+	free_limited_quota,
+	trial_subscriber_quota,
+	yearly_subscriber_quota,
+	copilot_enterprise_seat_quota,
+	copilot_for_business_seat_quota,
+}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
 public partial class GitHubStatusBarControl : UserControl
 {
-	private GitHubStatusData? _statusData;
+	//-----------------------------------------------------------------------------------------------------------------
+	#region Fields
+
+	/// <summary>
+	/// Contains basic user and subscription info retrieved from Copilot MEF components
+	/// (like username, subscription type, chat/completions enabled flags etc).
+	/// </summary>
+	private CopilotUserInfo? _basicCopilotUserInfo;
+
+	/// <summary>
+	/// Contains a *very* thorough breakdown of Copilot usage for the current billing period,
+	/// retrieved from GitHub's billing API.
+	/// </summary>
+	private CopilotBillingUsage? _githubBillingUsage;
+
+	/// <summary>
+	/// Contains personal quota and usage details retrieved from GitHub's Copilot API.
+	/// That also includes the remaining quota percentage which is used to display the status text in the status bar.
+	/// </summary>
+	private CopilotQuotaResponse? _personalQuota;
+
+	#endregion Fields
+
+	//-----------------------------------------------------------------------------------------------------------------
+	#region Construction
 
 	public GitHubStatusBarControl()
 		=> InitializeComponent();
 
+	#endregion Construction
+
+	//-----------------------------------------------------------------------------------------------------------------
+	#region Properties
+
+	/// <summary>
+	/// Backing field for the text shown in the status bar.
+	/// It's derived from the remaining quota percentage, but also includes some basic status info
+	/// (like username or "not signed in" message).
+	/// </summary>
 	public string StatusText
 	{
-		get => StatusTextBlock.Text;
-		set => StatusTextBlock.Text = value;
+		get => ctrlStatusTextBlock.Text;
+		private set => ctrlStatusTextBlock.Text = value;
 	}
 
-	public string StatusTooltip
+	/// <summary>
+	/// Backing field for the tool-tip shown when hovering over the status bar text.
+	/// It contains detailed information about the user's Copilot usage and quota.
+	/// </summary>
+	public string StatusToolTip
 	{
-		get => StatusTextBlock.ToolTip?.ToString() ?? string.Empty;
-		set => StatusTextBlock.ToolTip = value;
+		get => ctrlStatusToolTip.Text?.ToString() ?? string.Empty;
+		private set => ctrlStatusToolTip.Text = value;
 	}
 
-	public GitHubStatusData? StatusData
+	#endregion Properties
+
+	//-----------------------------------------------------------------------------------------------------------------
+	#region Static Methods
+
+	private static EStatusEnum ParseStatus(string? status)
 	{
-		get => _statusData;
-		set
-		{
-			_statusData		= value;
-			StatusText		= GetStatusText(_statusData);
-			StatusTooltip	= GetStatusTooltip(_statusData);
-		}
-	}
+		if (status is null || string.IsNullOrWhiteSpace(status))
+			return EStatusEnum.Unset;
 
-	private static string GetStatusText(GitHubStatusData? data)
-	{
-		if (data is null )
-			return "Unknown Status";
+		else if (status.Equals( "NotSignedInToGitHub", StringComparison.OrdinalIgnoreCase))
+			return EStatusEnum.NotSignedInToGitHub;
 
-		else if (data.Status == "NotSignedInToGitHub")
-			return "GitHub Copilot: Not signed in";
-
-		else if (data.Status == "OK")
-		{
-
-
-			if (data.PersonalMetrics?.QuotaSnapshots?.PremiumInteractions?.PercentRemaining is not null)
-				return $"{data.GitHubUsername}: {data.PersonalMetrics.QuotaSnapshots.PremiumInteractions.PercentRemaining:F1}%";
-			else
-				return $"{data.GitHubUsername}: ...%";
-		}
+		else if (status.Equals( "OK", StringComparison.OrdinalIgnoreCase))
+			return EStatusEnum.OK;
 
 		else
-			return $"Unhandled Status [{data.Status}]";
+			return EStatusEnum.Unhandled;
 	}
 
-	private static string GetStatusTooltip(GitHubStatusData? data)
+	private static ESubscriptionType ParseSubscriptionType(string? subscriptionType)
 	{
-		if (data is null)
-			return "GitHub Copilot status is not available.";
-
-		StringBuilder sb = new StringBuilder()
-			.AppendLine($"Status:			{data.Status}")
-			.AppendLine($"User:			{data.GitHubUsername}")
-			.AppendLine($"Subscription:		{data.SubscriptionType}")
-			.AppendLine($"Account type:		{(data.IsEnterprise == true ? "Enterprise" : data.IsIndividual == true ? "Individual" : "Unknown")}")
-			.AppendLine($"Organizations:		{(data.OrganizationList != null ? string.Join(", ", data.OrganizationList) : "None")}")
-			.AppendLine($"Enterprises:		{(data.EnterpriseList != null ? string.Join(", ", data.EnterpriseList) : "None")}")
-			.AppendLine()
-			.AppendLine($"Chat:			{FormatBool(data.ChatEnabled)}")
-			.AppendLine($"Completions:		{FormatBool(data.CompletionsEnabled)}")
-			.AppendLine($"Annotations:		{FormatBool(data.AnnotationsEnabled)}")
-			.AppendLine($"MCP:			{FormatBool(data.McpEnabledByToken)}")
-			.AppendLine($"Editor preview:		{FormatBool(data.EditorPreviewFeaturesEnabled)}")
-			.AppendLine($"Code quote:		{FormatBool(data.CodeQuoteEnabled)}")
-			.AppendLine($"Chat JetBrains:		{FormatBool(data.ChatJetbrainsEnabled)}")
-			.AppendLine($"Copilot exclusion A:	{FormatBool(data.CopilotExclusion)}")
-			.AppendLine($"Copilot exclusion B:	{FormatBool(data.CopilotExclusionEnabled)}");
-
-		if (data.OrganizationList?.Length > 0)
-			_ = sb.AppendLine($"Organizations:		{string.Join(", ", data.OrganizationList)}");
-
-		if (data.EnterpriseList?.Length > 0)
-			_ = sb.AppendLine($"Enterprises:		{string.Join(", ", data.EnterpriseList)}");
-
-		//--- Personal Metrics ------------------------------------------------
-		if (data.PersonalMetrics is not null)
-		{
-			_ = sb
-				.AppendLine()
-				.AppendLine("Personal Metrics:");
-
-			if (data.PersonalMetrics.ErrorMessage is not null)
-				_ = sb.AppendLine($"  Error: [{data.PersonalMetrics.ErrorMessage}]");
-
-			//--- premium quota ---------------------------
-			if (data.PersonalMetrics.QuotaSnapshots?.PremiumInteractions is not null)
-				_ = sb.Append(GetQuotaDetailToolTip("Premium Interactions", data.PersonalMetrics.QuotaSnapshots.PremiumInteractions));
-			else
-				_ = sb.AppendLine($"  Premium Interactions: [No data]");
-
-			//--- Chat Interactions -----------------------
-			if (data.PersonalMetrics.QuotaSnapshots?.Chat is not null)
-				_ = sb.Append(GetQuotaDetailToolTip("Chat Interactions", data.PersonalMetrics.QuotaSnapshots.Chat));
-			else
-				_ = sb.AppendLine($"  Chat Interactions: [No data]");
-
-			//--- Completions -----------------------------
-			if (data.PersonalMetrics.QuotaSnapshots?.Completions is not null)
-				_ = sb.Append(GetQuotaDetailToolTip("Completions", data.PersonalMetrics.QuotaSnapshots.Completions));
-			else
-				_ = sb.AppendLine($"  Completions: [No data]");
-		}
-
-		//--- Organization Metrics --------------------------------------------
-		if (data.OrganizationMetrics is not null)
-		{
-			_ = sb.AppendLine().AppendLine("Organization Metrics:");
-			if (data.OrganizationMetrics.ErrorMessage is not null)
-				_ = sb.AppendLine($"  Error: [{data.OrganizationMetrics.ErrorMessage}]");
-
-			//--- premium quota ---------------------------
-		}
-
-		//--- return result ---------------------------------------------------
-		return sb.ToString().TrimEnd();
+		return !string.IsNullOrWhiteSpace(subscriptionType) && Enum.TryParse<ESubscriptionType>(subscriptionType, ignoreCase: true, out ESubscriptionType result)
+			? result
+			: ESubscriptionType.Unknown;
 	}
 
 	private static StringBuilder GetQuotaDetailToolTip(string title, QuotaDetail detail)
@@ -140,22 +121,140 @@ public partial class GitHubStatusBarControl : UserControl
 			return new StringBuilder()
 				.AppendLine()
 				.AppendLine($"{title}:")
-				.AppendLine($"  Unlimited");
+				.AppendLine($"      Unlimited");
 		}
 		else
 		{
 			return new StringBuilder()
 				.AppendLine()
 				.AppendLine($"{title}:")
-				.AppendLine($"  Remaining:	{detail.PercentRemaining:F1}%  ({detail.QuotaRemaining} / {detail.Entitlement})")
-				.AppendLine($"  Overage:	{detail.OverageCount} (permitted: {FormatBool(detail.OveragePermitted)})");
+				.AppendLine($"      Remaining:	{100-detail.PercentRemaining:F1}%  ({detail.QuotaRemaining} / {detail.Entitlement} left)")
+				.AppendLine($"      Overage:	{detail.OverageCount} (permitted: {FormatBool(detail.OveragePermitted)})");
 		}
 	}
 
 	private static string FormatBool(bool? value) => value switch
 	{
 		true  => "✔",
-		false => "✘",
+		false => "❌",
 		null  => "❓",
 	};
+
+	#endregion Static Methods
+
+	//-----------------------------------------------------------------------------------------------------------------
+	#region Methods
+
+	public void SetData(CopilotUserInfo? copilotUserInfo, CopilotBillingUsage? billingUsage, CopilotQuotaResponse? personalQuota)
+	{
+		_basicCopilotUserInfo	= copilotUserInfo;
+		_githubBillingUsage		= billingUsage;
+		_personalQuota			= personalQuota;
+
+		UpdateStatusText();
+		UpdateToolTip();
+	}
+
+	private void UpdateStatusText()
+	{
+		StringBuilder sb = new ();
+
+		string userName = _personalQuota?.Login
+			?? _basicCopilotUserInfo?.Username
+			?? "n/a";
+
+		_ = sb.Append( ParseStatus(_basicCopilotUserInfo?.Status) switch
+		{
+			EStatusEnum.OK			=> userName,
+			EStatusEnum.Unset		=> "Status not available",
+			EStatusEnum.NotSignedInToGitHub => "Not signed in",
+			EStatusEnum.Unhandled	=> $"Unhandled status [{_basicCopilotUserInfo?.Status}]",
+			_						=> "Unknown status"
+		});
+
+		if (_personalQuota?.QuotaSnapshots?.PremiumInteractions?.PercentRemaining is double PercentRemaining)
+			_ = sb.Append($": {100-PercentRemaining:F1}%");
+
+		StatusText = sb.ToString();
+	}
+
+
+
+	private void UpdateToolTip()
+	{
+		StringBuilder sb = new();
+
+		//--- helper ----------------------------------------------------------
+		IEnumerable<string> EnumerateAccountTypes()
+		{
+			if (_basicCopilotUserInfo?.IsEnterprise == true)
+				yield return "Enterprise";
+			if (_basicCopilotUserInfo?.IsIndividual == true)
+				yield return "Individual";
+		}
+
+		string subscriptionType = ParseSubscriptionType(_basicCopilotUserInfo?.SubscriptionType) switch
+		{
+			ESubscriptionType.free_limited_quota			=> "Free (limited quota)",
+			ESubscriptionType.trial_subscriber_quota		=> "Trial Subscriber",
+			ESubscriptionType.yearly_subscriber_quota		=> "Yearly Subscriber",
+			ESubscriptionType.copilot_enterprise_seat_quota	=> "Copilot Enterprise",
+			ESubscriptionType.copilot_for_business_seat_quota => "Copilot for Business",
+			ESubscriptionType.Unknown						=> "Unknown",
+			_ => $"[{_basicCopilotUserInfo?.SubscriptionType}]"
+		};
+
+		//--- basic info ------------------------------------------------------
+		_ = _basicCopilotUserInfo is null
+			? sb.AppendLine("Basic user information is not available.")
+			: sb
+				.AppendLine("--- Basic Information ---")
+				.AppendLine($"   Status:			{_basicCopilotUserInfo.Status}")
+				.AppendLine($"   User:			{_basicCopilotUserInfo.Username}")
+				.AppendLine($"   Subscription:		{subscriptionType}")
+				.AppendLine($"   Account type:		{string.Join(", ", EnumerateAccountTypes())}");
+
+		//--- Quota details ---------------------------------------------------
+		if (_personalQuota is not null)
+		{
+			_ = sb
+				.AppendLine()
+				.AppendLine("--- Features Enabled ---")
+				.AppendLine($"   Chat:			{FormatBool(_personalQuota.ChatEnabled)}")
+				.AppendLine($"   Editor preview:		{FormatBool(_personalQuota.EditorPreviewFeaturesEnabled)}")
+				.AppendLine($"   CLI:			{FormatBool(_personalQuota.CliEnabled)}")
+				.AppendLine($"   CLI Remote Control:	{FormatBool(_personalQuota.CliRemoteControlEnabled)}")
+				.AppendLine($"   Cloud Session Storage:	{FormatBool(_personalQuota.CloudSessionStorageEnabled)}")
+				.AppendLine($"   Copilot Ignore:		{FormatBool(_personalQuota.CopilotIgnoreEnabled)}")
+				.AppendLine($"   MCP:			{FormatBool(_personalQuota.IsMcpEnabled)}");
+
+			_ = sb
+				.AppendLine()
+				.AppendLine("--- Personal Metrics ---");
+
+			//--- premium quota ---------------------------
+			_ = _personalQuota.QuotaSnapshots?.PremiumInteractions is not null
+				? sb.Append(GetQuotaDetailToolTip("   Premium Interactions", _personalQuota.QuotaSnapshots.PremiumInteractions))
+				: sb.AppendLine($"   Premium Interactions: [No data]");
+
+			//--- Chat Interactions -----------------------
+			_ = _personalQuota.QuotaSnapshots?.Chat is not null
+				? sb.Append(GetQuotaDetailToolTip("   Chat Interactions", _personalQuota.QuotaSnapshots.Chat))
+				: sb.AppendLine($"   Chat Interactions: [No data]");
+
+			//--- Completions -----------------------------
+			_ = _personalQuota.QuotaSnapshots?.Completions is not null
+				? sb.Append(GetQuotaDetailToolTip("   Completions", _personalQuota.QuotaSnapshots.Completions))
+				: sb.AppendLine($"   Completions: [No data]");
+		}
+		else
+		{
+			_ = sb.AppendLine("Personal quota and usage information is not available.");
+		}
+
+		//--- return result ---------------------------------------------------
+		StatusToolTip = sb.ToString();
+	}
+
+	#endregion Methods
 }

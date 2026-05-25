@@ -1,4 +1,7 @@
-﻿using System;
+﻿
+// ignore spelling: mef
+
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -13,24 +16,18 @@ using ExportProvider = System.ComponentModel.Composition.Hosting.ExportProvider;
 namespace CoPilotStatusExtension.Models;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-public sealed class CoPilotTokenManager : IDisposable
+public sealed class CoPilotTokenManager(IComponentModel? componentModel) : IDisposable
 {
 	//-----------------------------------------------------------------------------------------------------------------
 	#region Fields
 
-	private object? _cpTokenManager;
-	private EventHandler? _cpIdentityChangedHandler;
-	private readonly IComponentModel? _componentModel;
+	private readonly IComponentModel? _componentModel	= componentModel;
+
+	private object? _copilotTokenManager				= null;
+	private EventHandler? _updateStatsEventHandler		= null;
 
 	#endregion Fields
-
-	//-----------------------------------------------------------------------------------------------------------------
 	#region Construction
-
-	public CoPilotTokenManager(IComponentModel? componentModel)
-	{
-		_componentModel = componentModel;
-	}
 
 	#endregion Construction
 
@@ -38,15 +35,15 @@ public sealed class CoPilotTokenManager : IDisposable
 	#region Private Methods
 
 	private EventInfo? GetCopilotIdentityChangedEvent()
-		=> _cpTokenManager?.GetType().GetEvent("CopilotIdentityChanged", BindingFlags.Public | BindingFlags.Instance);
+		=> _copilotTokenManager?.GetType().GetEvent("CopilotIdentityChanged", BindingFlags.Public | BindingFlags.Instance);
 
 	private object? GetAuthInfoObject()
 	{
-		if (_cpTokenManager is null)
+		if (_copilotTokenManager is null)
 			return null;
 
-		MethodInfo method = _cpTokenManager.GetType().GetMethod("GetAuthInfo", BindingFlags.Public | BindingFlags.Instance);
-		return method?.Invoke(_cpTokenManager, /*forceRefresh*/ [false]);
+		MethodInfo method = _copilotTokenManager.GetType().GetMethod("GetAuthInfo", BindingFlags.Public | BindingFlags.Instance);
+		return method?.Invoke(_copilotTokenManager, /*forceRefresh*/ [false]);
 	}
 
 	private static T? GetProperty<T>(object? obj, string propertyName)
@@ -67,21 +64,21 @@ public sealed class CoPilotTokenManager : IDisposable
 			if (_componentModel is null)
 				return;
 
-			ExportProvider exportProvider	= _componentModel.DefaultExportProvider;
+			ExportProvider exportProvider = _componentModel.DefaultExportProvider;
 
 			//--- Get the ICopilotTokenManager MEF component from Copilot's Conversations.Abstractions assembly ---
-			_cpTokenManager = exportProvider.GetExportedValueOrDefault<object>("Conversations.Abstractions.ICopilotTokenManager");
-			if (_cpTokenManager is null)
+			_copilotTokenManager = exportProvider.GetExportedValueOrDefault<object>("Conversations.Abstractions.ICopilotTokenManager");
+			if (_copilotTokenManager is null)
 			{
 				Debug.WriteLine("ICopilotTokenManager could not be resolved from MEF.");
 				return;
 			}
 
 			//--- Subscribe to CopilotIdentityChanged so the status bar updates on login/logout ---
-			EventInfo? copilotIdentityChangedEventInfo = GetCopilotIdentityChangedEvent();
+			_updateStatsEventHandler = updateStatsEventHandler;
 
-			if (copilotIdentityChangedEventInfo is not null)
-				copilotIdentityChangedEventInfo.AddEventHandler(_cpTokenManager, updateStatsEventHandler);
+			GetCopilotIdentityChangedEvent()
+				?.AddEventHandler(_copilotTokenManager, _updateStatsEventHandler);
 		}
 		catch (Exception ex)
 		{
@@ -89,7 +86,7 @@ public sealed class CoPilotTokenManager : IDisposable
 		}
 	}
 
-	public GitHubStatusData? GetCurrentStatus()
+	public CopilotUserInfo? GetCopilotUserInfo()
 	{
 		object? authInfo = GetAuthInfoObject();
 
@@ -97,43 +94,29 @@ public sealed class CoPilotTokenManager : IDisposable
 			return null;
 
 		//-------------------------------------------------------------------------------------
-		GitHubStatusData status = new ()
+		CopilotUserInfo status = new ()
 		{
-			Status							= GetProperty<object>(authInfo, "Status")?.ToString()		?? "STATUS_NA",
+			Status							= GetProperty<object>(authInfo, "Status")?.ToString()	?? "STATUS_NA",
+
+			Username						= GetProperty<string>(authInfo, "GitHubUsername")		?? string.Empty,
+			AccessToken						= GetProperty<string>(authInfo, "GitHubToken")			?? string.Empty,
+			SubscriptionType				= GetProperty<string>(authInfo, "SubscriptionType")		?? string.Empty,
+
 			IsIndividual					= GetProperty<bool?>(authInfo, "IsIndividual"),
 			IsEnterprise					= GetProperty<bool?>(authInfo, "IsEnterprise"),
 
 			ChatEnabled						= GetProperty<bool?>(authInfo, "ChatEnabled"),
 			CompletionsEnabled				= GetProperty<bool?>(authInfo, "CompletionsEnabled"),
-			EditorPreviewFeaturesEnabled	= GetProperty<bool?>(authInfo, "EditorPreviewFeaturesEnabled"),
 			McpEnabledByToken				= GetProperty<bool?>(authInfo, "McpEnabledByToken"),
 
-			GitHubUsername					= GetProperty<string>(authInfo, "GitHubUsername")			?? string.Empty,
-			GitHubPassword					= GetProperty<string>(authInfo, "GitHubToken")				?? string.Empty,
-			SubscriptionType				= GetProperty<string>(authInfo, "SubscriptionType")		?? string.Empty,
-
-			AnnotationsEnabled				= GetProperty<bool?>(authInfo, "AnnotationsEnabled"),
-			CodeQuoteEnabled				= GetProperty<bool?>(authInfo, "CodeQuoteEnabled"),
-			ChatJetbrainsEnabled			= GetProperty<bool?>(authInfo, "ChatJetbrainsEnabled"),
-			CopilotExclusion				= GetProperty<bool?>(authInfo, "CopilotExclusion"),3
+			EditorPreviewFeaturesEnabled	= GetProperty<bool?>(authInfo, "EditorPreviewFeaturesEnabled"),
+			CopilotExclusion				= GetProperty<bool?>(authInfo, "CopilotExclusion"),
 		};
-
-		if (GetProperty<object>(authInfo, "TokenEnvelope") is object tokenEnvelope)
-		{
-
-			status.AnnotationsEnabled		= GetProperty<bool?>(tokenEnvelope, "AnnotationsEnabled");
-			status.ChatJetbrainsEnabled		= GetProperty<bool?>(tokenEnvelope, "ChatJetbrainsEnabled");
-			status.CodeQuoteEnabled			= GetProperty<bool?>(tokenEnvelope, "CodeQuoteEnabled");
-			status.CopilotExclusionEnabled	= GetProperty<bool?>(tokenEnvelope, "CopilotExclusionEnabled");
-			status.ErrorDetails				= GetProperty<object>(tokenEnvelope, "ErrorDetails");
-			long expiresAt					= GetProperty<long>(tokenEnvelope, "ExpiresAt");
-			status.ExpiresAt				= DateTimeOffset.FromUnixTimeSeconds(expiresAt).ToLocalTime().DateTime;
-		}
 
 		return status;
 	}
 
-	public string[] DEBUG_GetAllCopilotMefInstances()
+	internal string[] DEBUG_GetAllCopilotMefInstances()
 	{
 		try
 		{
@@ -175,10 +158,9 @@ public sealed class CoPilotTokenManager : IDisposable
 		return [];
 	}
 
-	public void DEBUG_TestInitializes()
+	internal void DEBUG_TestInitializes()
 	{
-		ExportProvider exportProvider = _componentModel!.DefaultExportProvider;
-
+		//ExportProvider exportProvider = _componentModel!.DefaultExportProvider;
 		//object? blah1 = exportProvider.GetExportedValueOrDefault<object>("Microsoft.VisualStudio.Copilot.Common.AuthManager");
 		//object? blah2 = exportProvider.GetExportedValueOrDefault<object>("Microsoft.VisualStudio.Copilot.Common.AzureDevOpsTokenManager");
 		//object? blah3 = exportProvider.GetExportedValueOrDefault<object>("Microsoft.VisualStudio.Copilot.Common.CopilotTokenManagerImpl");
@@ -207,9 +189,9 @@ public sealed class CoPilotTokenManager : IDisposable
 		//object? blah16 = exportProvider.GetExportedValueOrDefault<object>("Microsoft.VisualStudio.Copilot.Core.HttpClientConfiguration.IMachineIdProvider");
 		//object? blah17 = exportProvider.GetExportedValueOrDefault<object>("Microsoft.VisualStudio.Copilot.Core.ICopilotAgentsActivationMonitor");
 		//object? blah18 = exportProvider.GetExportedValueOrDefault<object>("Microsoft.VisualStudio.Copilot.ICopilotTokenCounter");
-		object? blah19 = exportProvider.GetExportedValueOrDefault<object>("Microsoft.VisualStudio.Copilot.UI.ChatMefPartAccessor");
-		object? blah20 = exportProvider.GetExportedValueOrDefault<object>("Microsoft.VisualStudio.Copilot.UI.IViewModelServices");
-		object? blah21oteote = exportProvider.GetExportedValueOrDefault<object>("Microsoft.VisualStudio.Copilot.UI.Mcp.Authentication.IMcpAuthViewModelProvider");
+		//object? blah19 = exportProvider.GetExportedValueOrDefault<object>("Microsoft.VisualStudio.Copilot.UI.ChatMefPartAccessor");
+		//object? blah20 = exportProvider.GetExportedValueOrDefault<object>("Microsoft.VisualStudio.Copilot.UI.IViewModelServices");
+		//object? blah21oteote = exportProvider.GetExportedValueOrDefault<object>("Microsoft.VisualStudio.Copilot.UI.Mcp.Authentication.IMcpAuthViewModelProvider");
 	}
 
 	#endregion Public Methods
@@ -219,11 +201,11 @@ public sealed class CoPilotTokenManager : IDisposable
 
 	public void Dispose()
 	{
-		if (_cpTokenManager is not null && _cpIdentityChangedHandler is not null)
+		if (_copilotTokenManager is not null && _updateStatsEventHandler is not null)
 		{
 			//--- determines the info-object and then uses [_cpTokenManager] as parent to remove the event handler ---
 			GetCopilotIdentityChangedEvent()
-				?.RemoveEventHandler(_cpTokenManager, _cpIdentityChangedHandler);
+				?.RemoveEventHandler(_copilotTokenManager, _updateStatsEventHandler);
 		}
 	}
 

@@ -1,6 +1,5 @@
 ﻿
 using System;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,7 +27,8 @@ namespace CoPilotStatusExtension;
 /// <remarks>
 /// <para>
 /// The minimum requirement for a class to be considered a valid package for Visual Studio
-/// is to implement the IVsPackage interface and register itself with the shell.
+/// is to implement the <see cref="IVsPackage"/> interface (done by inheriting from <see cref="AsyncPackage"/>)
+/// and register itself with the shell.
 /// This package uses the helper classes defined inside the Managed Package Framework (MPF)
 /// to do it: it derives from the Package class that provides the implementation of the
 /// IVsPackage interface and uses the registration attributes defined in the framework to
@@ -66,10 +66,9 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 
 	private static StatusBar? FindStatusBar()
 	{
-		if (Application.Current?.MainWindow is not Window mainWindow)
-			return null;
-
-		return FindChild<StatusBar>(mainWindow);
+		return Application.Current?.MainWindow is not Window mainWindow
+			? null
+			: FindChild<StatusBar>(mainWindow);
 	}
 
 	private static T? FindChild<T>(DependencyObject parent) where T : DependencyObject
@@ -162,80 +161,40 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 		{
 			await JoinableTaskFactory.SwitchToMainThreadAsync();
 
-			GitHubStatusData? status = _tokenManager.GetCurrentStatus();
-			_statusControl.StatusData = status;
+			//--- determine CoPilot username and access-token -------------------------------------
+			CopilotUserInfo? copilotInfo	= _tokenManager.GetCopilotUserInfo();
 
-			//--- fetch billing usage if we have a username + token ---
-			if (status is not null
-				&& !string.IsNullOrEmpty(status.GitHubUsername)
-				&& !string.IsNullOrEmpty(status.GitHubPassword))
+			if (copilotInfo is null || string.IsNullOrEmpty(copilotInfo.Username) || string.IsNullOrEmpty(copilotInfo.AccessToken))
 			{
-				//--- Billing ---------------------------------------------------------------------
-				CopilotBillingUsage billing = await _gitHubService
-					.FetchUserBillingUsageAsync(status.GitHubUsername, status.GitHubPassword)
+				await JoinableTaskFactory.SwitchToMainThreadAsync();
+				_statusControl.SetData(null, null, null);
+
+				return;
+			}
+
+
+			//--- fetch GitHub API data -----------------------------------------------------------
+
+			//--- Billing -----------------------------------------------------
+			(int billingStatusCode, string billingReasonPhrase, CopilotBillingUsage? billingUsage)
+				= await _gitHubService
+					.FetchUserBillingUsageAsync(copilotInfo.Username, copilotInfo.AccessToken)
 					.ConfigureAwait(false);
 
-				if (billing.ErrorMessage is null)
-				{
-					status = status with
-					{
-						BillingUsage = billing,
-					};
 
-				}
+			//--- Personal Metrics --------------------------------------------
+			(int chatStatusCode, string chatReasonPhrase, CopilotQuotaResponse? personalQuota) = await _gitHubService
+				.FetchUserChatUsageAsync(copilotInfo.AccessToken)
+				.ConfigureAwait(false);
 
-				//--- Personal Metrics ------------------------------------------------------------
-				if (status.IsIndividual == true)
-				{
-					CopilotChatStatistics personalMetrics = await _gitHubService
-						.FetchUserChatUsageAsync(status.GitHubUsername, status.GitHubPassword)
-						.ConfigureAwait(false);
 
-					if (personalMetrics.ErrorMessage is null)
-					{
-						status = status with
-						{
-							PersonalMetrics = personalMetrics,
-						};
-					}
-				}
-
-				//--- Organization Metrics -----------------------------------------------
-				if (status.IsEnterprise == true && status.OrganizationList?.Length > 0)
-				{
-					PremiumRequestUsageResult orgMetrics = await _gitHubService
-						.FetchOrgPremiumRequestUsageAsync(status.OrganizationList.First(), status.GitHubPassword, DateTime.Now.Year)
-						.ConfigureAwait(false);
-
-					if (orgMetrics.ErrorMessage is null)
-					{
-						status = status with
-						{
-							OrganizationMetrics = orgMetrics,
-						};
-					}
-				}
-
-				//--- Enterprise Metrics ----------------------------------------------------------
-				//if (status.IsEnterprise == true)
-				//{
-				//	OrgCopilotMetricsResult orgMetrics = await _gitHubService
-				//		.FetchOrgCopilotMetricsAsync("", status.GitHubPassword)
-				//		.ConfigureAwait(false);
-				//
-				//	if (orgMetrics.ErrorMessage is null)
-				//	{
-				//		status = status with
-				//		{
-				//			EnterpriseMetrics = orgMetrics,
-				//		};
-				//	}
-				//}
-
-				//--- Update Status UI ------------------------------------------------------------
-				await JoinableTaskFactory.SwitchToMainThreadAsync();
-				_statusControl.StatusData = status;
-			}
+			//--- Update Status UI --------------------------------------------
+			await JoinableTaskFactory.SwitchToMainThreadAsync();
+			_statusControl.SetData(copilotInfo, billingUsage, personalQuota);
+		}
+		catch (Exception ex)
+		{
+			await Console.Error.WriteLineAsync(ex.ToString());
 		}
 		finally
 		{

@@ -31,7 +31,7 @@
 		>
 
 		<Viewbox
-			Margin				="4,0,0,0"
+			Margin				="8, 0, 0, 0"
 
 			Width				="16"
 			Height				="16"
@@ -72,15 +72,15 @@
 		</Viewbox>
 
 		<TextBlock
-			x:Name				="StatusTextBlock"
+			x:Name				="ctrlStatusTextBlock"
 			VerticalAlignment	="Center"
 			d:Text				="3rikF: 42%"
-			Margin				="8,0"
+			Margin				="8, 0, 8, 0"
 			>
 
 			<TextBlock.ToolTip>
 				<TextBlock
-					x:Name="StatusToolTip"
+					x:Name="ctrlStatusToolTip"
 					/>
 			</TextBlock.ToolTip>
 

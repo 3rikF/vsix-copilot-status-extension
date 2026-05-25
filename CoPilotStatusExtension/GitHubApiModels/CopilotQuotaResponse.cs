@@ -9,9 +9,17 @@ namespace CoPilotStatusExtension.GitHubApiModels;
 //-----------------------------------------------------------------------------------------------------------------------------------------
 public sealed class CopilotQuotaResponse
 {
+	/// <summary>
+	/// The GitHib user-name
+	/// </summary>
 	[JsonProperty("login")]
 	public string Login { get; set; }
 
+	/// <summary>
+	/// Examples
+	///		yearly_subscriber_quota
+	///		copilot_for_business_seat_quota
+	/// </summary>
 	[JsonProperty("access_type_sku")]
 	public string AccessTypeSku { get; set; }
 
@@ -33,7 +41,10 @@ public sealed class CopilotQuotaResponse
 	[JsonProperty("copilotignore_enabled")]
 	public bool CopilotIgnoreEnabled { get; set; }
 
-	[JsonProperty("copilot_plan")]
+	/// <summary>
+	/// eg: "business"
+	/// </summary>
+	[JsonProperty("copilot_plan")]	
 	public string CopilotPlan { get; set; }
 
 	[JsonProperty("editor_preview_features_enabled")]
@@ -46,7 +57,7 @@ public sealed class CopilotQuotaResponse
 	public string[] OrganizationLoginList { get; set; }
 
 	[JsonProperty("organization_list")]
-	public string[] OrganizationList { get; set; }
+	public OrganizationInfo[] OrganizationList { get; set; }
 
 	[JsonProperty("restricted_telemetry")]
 	public bool RestrictedTelemetry { get; set; }
