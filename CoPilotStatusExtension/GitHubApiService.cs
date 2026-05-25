@@ -1,8 +1,12 @@
 
 using System;
-using System.Linq;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading.Tasks;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 namespace CoPilotStatusExtension;
@@ -13,7 +17,7 @@ internal sealed class GitHubApiService
 	//-----------------------------------------------------------------------------------------------------------------
 	#region Fields
 
-	//private static readonly HttpClient HttpClientInstance = CreateHttpClient();
+	private static readonly HttpClient HttpClientInstance = CreateHttpClient();
 
 	#endregion Fields
 
@@ -101,6 +105,106 @@ internal sealed class GitHubApiService
 	//-----------------------------------------------------------------------------------------------------------------
 	#region API
 
+	/// <summary>
+	/// Fetches Copilot billing usage for the given GitHub user.
+	/// Mirrors the TypeScript fetchUserBillingUsage() function.
+	/// Token requires "Plan: read-only" scope.
+	/// </summary>
+	public async Task<CopilotBillingUsage> FetchUserBillingUsageAsync(
+		string username,
+		string token,
+		int? year  = null,
+		int? month = null)
+	{
+		CopilotBillingUsage result = new ();
+
+		try
+		{
+			DateTime now	= DateTime.UtcNow;
+			int reqYear		= year  ?? now.Year;
+			int reqMonth	= month ?? now.Month;
+
+			string url =
+				$"https://api.github.com/users/{Uri.EscapeDataString(username)}"
+				+ $"/settings/billing/usage"
+				+ $"?year={reqYear}&month={reqMonth}";
+
+			using HttpRequestMessage  req	= BuildRequest(HttpMethod.Get, url, token);
+			using HttpResponseMessage res	= await HttpClientInstance.SendAsync(req).ConfigureAwait(false);
+
+			string json						= await res.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+			if (!res.IsSuccessStatusCode)
+			{
+				result.ErrorMessage = $"HTTP {(int)res.StatusCode}: {res.ReasonPhrase}";
+				return result;
+			}
+
+			JObject root = JObject.Parse(json);
+
+			if (root["usageItems"] is not JArray usageItems)
+				return result;
+
+			//--- filter for Copilot items only (same logic as TS source) ---
+			foreach (JToken item in usageItems)
+			{
+				string? product = item["product"]?.Value<string>();
+				if (!string.Equals(product, "copilot", StringComparison.OrdinalIgnoreCase))
+					continue;
+
+				double netAmount    = item["netAmount"]?.Value<double>()		?? 0;
+				double quantity     = item["quantity"]?.Value<double>()			?? 0;
+				double discount     = item["discountAmount"]?.Value<double>()	?? 0;
+				double pricePerUnit = item["pricePerUnit"]?.Value<double>()		?? 0;
+
+				result.TotalNetAmount += netAmount;
+				result.TotalQuantity  += quantity;
+
+				//--- derive included units from discount / pricePerUnit (guard div-by-zero) ---
+				if (pricePerUnit > 0)
+					result.TotalIncludedQuantity += Math.Round(discount / pricePerUnit);
+			}
+
+			result.TotalOverageQuantity = Math.Max(0, result.TotalQuantity - result.TotalIncludedQuantity);
+		}
+		catch (Exception ex)
+		{
+			result.ErrorMessage = ex.Message;
+			Debug.WriteLine($"[GitHubApiService] FetchUserBillingUsageAsync error: {ex.Message}");
+		}
+
+		return result;
+	}
+
+	public async Task<CopilotChatStatistics> FetchUserChatUsageAsync(
+		string username,
+		string token)
+	{
+		string url						= "https://api.github.com/copilot_internal/user";
+		using HttpRequestMessage  req	= BuildRequest(HttpMethod.Get, url, token);
+		using HttpResponseMessage res	= await HttpClientInstance.SendAsync(req).ConfigureAwait(false);
+
+		string json						= await res.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+		CopilotChatStatistics result = new ();
+
+		if (!res.IsSuccessStatusCode)
+		{
+			result.ErrorMessage = $"HTTP {(int)res.StatusCode}: {res.ReasonPhrase}";
+			return result;
+		}
+
+		CopilotQuotaResponse response = JsonConvert.DeserializeObject<CopilotQuotaResponse>(json)
+			?? new CopilotQuotaResponse();
+
+		result.QuotaSnapshots		= response?.QuotaSnapshots;
+		result.CopilotPlan			= response?.CopilotPlan;
+		result.QuotaResetDate		= response?.QuotaResetDate;
+		result.QuotaResetDateUtc	= response?.QuotaResetDateUtc;
+
+		return result;
+	}
+
 	///// <summary>
 	///// Fetches GitHub rate-limit and Copilot seat data for the given token.
 	///// </summary>
@@ -168,25 +272,25 @@ internal sealed class GitHubApiService
 	#endregion API
 
 	//-----------------------------------------------------------------------------------------------------------------
-	//#region Helpers
-	//
-	//private static HttpClient CreateHttpClient()
-	//{
-	//	HttpClient client = new();
-	//	client.DefaultRequestHeaders.UserAgent.Add(
-	//		new ProductInfoHeaderValue("vsix-status-bar", "1.0"));
-	//	client.Timeout = TimeSpan.FromSeconds(10);
-	//	return client;
-	//}
-	//
-	//private static HttpRequestMessage BuildRequest(HttpMethod method, string url, string token)
-	//{
-	//	HttpRequestMessage req = new(method, url);
-	//	req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-	//	req.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
-	//	req.Headers.Add("X-GitHub-Api-Version", "2022-11-28");
-	//	return req;
-	//}
-	//
-	//#endregion Helpers
+	#region Helpers
+
+	private static HttpClient CreateHttpClient()
+	{
+		HttpClient client = new();
+		client.DefaultRequestHeaders.UserAgent.Add(
+			new ProductInfoHeaderValue("vsix-copilot-status-bar", "0.1"));
+		client.Timeout = TimeSpan.FromSeconds(10);
+		return client;
+	}
+
+	private static HttpRequestMessage BuildRequest(HttpMethod method, string url, string token)
+	{
+		HttpRequestMessage req = new(method, url);
+		req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+		req.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
+		req.Headers.Add("X-GitHub-Api-Version", "2022-11-28");
+		return req;
+	}
+
+	#endregion Helpers
 }
