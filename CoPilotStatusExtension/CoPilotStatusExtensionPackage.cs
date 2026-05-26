@@ -57,7 +57,8 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 	private GitHubApiService		_gitHubService	= null!;
 	private CoPilotTokenManager?	_tokenManager	= null;
 
-	private readonly object _syncRoot = new();
+	private readonly SemaphoreSlim _semaphore		= new(1, 1);
+
 
 	#endregion Fields
 
@@ -137,7 +138,7 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 			Application.Current.MainWindow.Activated += OnMainWindowActivated;
 
 			//--- refresh after 60s fallback timer ---
-			_refreshTimer = new Timer(_ => OnMainWindowActivated(null, null), null, TimeSpan.Zero, TimeSpan.FromSeconds(60));
+			_refreshTimer = new Timer( _ => _ = JoinableTaskFactory.RunAsync(RefreshGitHubStatusAsync), null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
 		}
 	}
 
@@ -154,13 +155,11 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 		if (_tokenManager is null)
 			return;
 
-		if (!Monitor.TryEnter(_syncRoot))
+		if (!await _semaphore.WaitAsync(0))  // 0ms = non-blocking TryEnter-Äquivalent
 			return;
 
 		try
 		{
-			await JoinableTaskFactory.SwitchToMainThreadAsync();
-
 			//--- determine CoPilot username and access-token -------------------------------------
 			CopilotUserInfo? copilotInfo	= _tokenManager.GetCopilotUserInfo();
 
@@ -198,7 +197,7 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 		}
 		finally
 		{
-			Monitor.Exit(_syncRoot);
+			_ = _semaphore.Release();
 		}
 	}
 
