@@ -15,7 +15,7 @@
 		<Setter Property="Background" Value="Transparent" />
 		<Style.Triggers>
 			<Trigger Property="IsMouseOver" Value="True">
-				<Setter Property="Background" Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarOptionsMouseDownBackgroundHorizontalGradientKey}}" />
+				<Setter Property="Background" Value="{DynamicResource MouseOverBackground}" />
 			</Trigger>
 		</Style.Triggers>
 	</Style>
