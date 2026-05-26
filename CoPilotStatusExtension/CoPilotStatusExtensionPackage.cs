@@ -180,12 +180,27 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 					.FetchUserBillingUsageAsync(copilotInfo.Username, copilotInfo.AccessToken)
 					.ConfigureAwait(false);
 
+			//--- reset all double percentage values from [0-100] to [0-1] for easier binding in the UI ---
+			if (billingUsage is not null)
+			{
+				billingUsage.TotalNetAmount			/= 100;
+				billingUsage.TotalQuantity			/= 100;
+				billingUsage.TotalIncludedQuantity	/= 100;
+				billingUsage.TotalOverageQuantity	/= 100;
+			}
 
 			//--- Personal Metrics --------------------------------------------
 			(int chatStatusCode, string chatReasonPhrase, CopilotQuotaResponse? personalQuota, RateLimitInfo? apiRateLimit) = await _gitHubService
 				.FetchUserChatUsageAsync(copilotInfo.AccessToken)
 				.ConfigureAwait(false);
 
+			//--- reset all double percentage values from [0-100] to [0-1] for easier binding in the UI ---
+			if (personalQuota is not null)
+			{
+				personalQuota.QuotaSnapshots.Chat.PercentRemaining					/= 100;
+				personalQuota.QuotaSnapshots.Completions.PercentRemaining			/= 100;
+				personalQuota.QuotaSnapshots.PremiumInteractions.PercentRemaining	/= 100;
+			}
 
 			//--- Update Status UI --------------------------------------------
 			await JoinableTaskFactory.SwitchToMainThreadAsync();

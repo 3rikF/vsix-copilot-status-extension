@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using CoPilotStatusExtension.GitHubApiModels;
 
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 namespace CoPilotStatusExtension.Models;
@@ -61,32 +60,25 @@ internal sealed class GitHubApiService
 			if (!res.IsSuccessStatusCode)
 				return ((int)res.StatusCode, res.ReasonPhrase, result);
 
-			//--- TODO: consider de-serializing into a strongly-typed model instead of JObject parsing ---
 			else
 			{
-				JObject root = JObject.Parse(serializedJsonPayload);
+				UserBillingUsageResponse? response = JsonConvert.DeserializeObject<UserBillingUsageResponse>(serializedJsonPayload);
 
-				if (root["usageItems"] is not JArray usageItems)
+				if (response?.UsageItems is not { } usageItems)
 					return ((int)res.StatusCode, "Invalid response format: missing 'usageItems' array", result);
 
 				//--- filter for Copilot items only (same logic as TS source) ---
-				foreach (JToken item in usageItems)
+				foreach (UserBillingUsageItem item in usageItems)
 				{
-					string? product = item["product"]?.Value<string>();
-					if (!string.Equals(product, "copilot", StringComparison.OrdinalIgnoreCase))
+					if (!string.Equals(item.Product, "copilot", StringComparison.OrdinalIgnoreCase))
 						continue;
 
-					double netAmount	= item["netAmount"]?.Value<double>()		?? 0;
-					double quantity		= item["quantity"]?.Value<double>()			?? 0;
-					double discount		= item["discountAmount"]?.Value<double>()	?? 0;
-					double pricePerUnit	= item["pricePerUnit"]?.Value<double>()		?? 0;
-
-					result.TotalNetAmount	+= netAmount;
-					result.TotalQuantity	+= quantity;
+					result.TotalNetAmount	+= item.NetAmount;
+					result.TotalQuantity	+= item.Quantity;
 
 					//--- derive included units from discount / pricePerUnit (guard div-by-zero) ---
-					if (pricePerUnit > 0)
-						result.TotalIncludedQuantity += Math.Round(discount / pricePerUnit);
+					if (item.PricePerUnit > 0)
+						result.TotalIncludedQuantity += Math.Round(item.DiscountAmount / item.PricePerUnit);
 				}
 
 				result.TotalOverageQuantity = Math.Max(0, result.TotalQuantity - result.TotalIncludedQuantity);
