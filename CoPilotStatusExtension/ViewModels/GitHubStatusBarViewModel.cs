@@ -10,8 +10,6 @@ using System.Text;
 using CoPilotStatusExtension.GitHubApiModels;
 using CoPilotStatusExtension.Models;
 
-using Microsoft.VisualStudio.PlatformUI;
-
 //-----------------------------------------------------------------------------------------------------------------------------------------
 namespace CoPilotStatusExtension.ViewModels;
 
