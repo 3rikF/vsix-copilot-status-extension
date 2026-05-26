@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
@@ -18,9 +18,7 @@
   <ItemGroup>
     <Page Include="Views\Resources\ConverterResources.xaml" />
     <Page Include="Views\Resources\StaticResources.xaml" />
-    <Page Include="Views\Resources\StyleResources.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    <Page Include="Views\Resources\StyleResources.xaml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectCapability Include="CreateVsixContainer" />

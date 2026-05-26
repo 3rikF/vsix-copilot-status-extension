@@ -138,7 +138,7 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 			Application.Current.MainWindow.Activated += OnMainWindowActivated;
 
 			//--- refresh after 60s fallback timer ---
-			_refreshTimer = new Timer( _ => _ = JoinableTaskFactory.RunAsync(RefreshGitHubStatusAsync), null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
+			_refreshTimer = new Timer( _ => _ = JoinableTaskFactory.RunAsync(RefreshGitHubStatusAsync), null, TimeSpan.FromSeconds(15), TimeSpan.FromSeconds(15));
 		}
 	}
 
