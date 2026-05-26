@@ -4,11 +4,24 @@
     <TargetFramework>net472</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>14</LangVersion>
-
     <!-- VSIX settings -->
     <VSSDKBuildToolsAutoSetup>true</VSSDKBuildToolsAutoSetup>
     <GeneratePkgDefFile>true</GeneratePkgDefFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Views\Resources\ConverterResources.xaml" />
+    <None Remove="Views\Resources\StaticResources.xaml" />
+    <None Remove="Views\Resources\StyleResources.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Include="Views\Resources\ConverterResources.xaml" />
+    <Page Include="Views\Resources\StaticResources.xaml" />
+    <Page Include="Views\Resources\StyleResources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
   <ItemGroup>
     <ProjectCapability Include="CreateVsixContainer" />
   </ItemGroup>

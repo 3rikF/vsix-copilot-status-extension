@@ -1,0 +1,64 @@
+<ResourceDictionary
+	xmlns			="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x			="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:vsshell	="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
+	>
+
+	<!-- ==== Merged Dictionaries ===================================================================================================== -->
+	<ResourceDictionary.MergedDictionaries>
+		<ResourceDictionary Source="pack://application:,,,/CoPilotStatusExtension;component/Views/Resources/StaticResources.xaml" />
+		<ResourceDictionary Source="pack://application:,,,/CoPilotStatusExtension;component/Views/Resources/ConverterResources.xaml" />
+	</ResourceDictionary.MergedDictionaries>
+
+	<!-- ==== UserControl: StatusBar Item ============================================================================================= -->
+	<Style x:Key="StatusBarControlStyle" TargetType="UserControl">
+		<Setter Property="Background" Value="Transparent" />
+		<Style.Triggers>
+			<Trigger Property="IsMouseOver" Value="True">
+				<Setter Property="Background" Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarOptionsMouseDownBackgroundHorizontalGradientKey}}" />
+			</Trigger>
+		</Style.Triggers>
+	</Style>
+
+	<!-- ==== ProgressBar: Usage Indicator ============================================================================================ -->
+	<!--
+		Color thresholds (Value is in [0, 1]):
+		  < 0.50  →  Gray           (clear within quota)
+		  > 0.50  →  Golden Orange  (approaching limit)
+		  > 0.75  →  Crimson        (critical)
+		DataTriggers are evaluated top-to-bottom; later matching trigger wins.
+	-->
+	<Style x:Key="UsageProgressBarStyle" TargetType="ProgressBar">
+
+		<Setter Property="Background"		Value="{StaticResource ProgressBackground}" />
+		<Setter Property="Foreground"		Value="{StaticResource BrushQuotaSave}" />
+		<Setter Property="BorderThickness"	Value="0" />
+		<!--<Setter Property="BorderBrush"	Value="{StaticResource BrushQuotaSave}" />-->
+		<!--<Setter Property="BorderBrush"	Value="{StaticResource BrushQuotaSave}" />-->
+
+		<Style.Triggers>
+			<DataTrigger Value="True">
+				<DataTrigger.Binding>
+					<Binding
+						Path				="Value"
+						RelativeSource		="{RelativeSource Self}"
+						Converter			="{StaticResource IsGreaterThen}"
+						ConverterParameter	="{StaticResource QuotaThresholdWarning}" />
+				</DataTrigger.Binding>
+				<Setter Property="Foreground" Value="{StaticResource BrushQuotaWarning}" />
+			</DataTrigger>
+
+			<DataTrigger Value="True">
+				<DataTrigger.Binding>
+					<Binding
+						Path				="Value"
+						RelativeSource		="{RelativeSource Self}"
+						Converter			="{StaticResource IsGreaterThen}"
+						ConverterParameter	="{StaticResource QuotaThresholdCritical}" />
+				</DataTrigger.Binding>
+				<Setter Property="Foreground" Value="{StaticResource BrushQuotaCritical}" />
+			</DataTrigger>
+		</Style.Triggers>
+	</Style>
+
+</ResourceDictionary>

@@ -18,31 +18,46 @@
 	d:DataContext		="{d:DesignInstance Type=localVM:GitHubStatusBarViewModel}"
 	>
 
+	<!-- ==== Resources =============================================================================================================== -->
+	<UserControl.Resources>
+		<ResourceDictionary>
+
+			<!-- ==== Merged Dictionaries ========================================================================= -->
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="pack://application:,,,/CoPilotStatusExtension;component/Views/Resources/StaticResources.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/CoPilotStatusExtension;component/Views/Resources/ConverterResources.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/CoPilotStatusExtension;component/Views/Resources/StyleResources.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+
+			<!-- ==== New Resources =============================================================================== -->
+		</ResourceDictionary>
+	</UserControl.Resources>
+
+
+	<!-- ==== Style =================================================================================================================== -->
 	<UserControl.Style>
-		<Style TargetType="UserControl">
-			<Setter Property="Background" Value="Transparent" />
-			<Style.Triggers>
-				<Trigger Property="IsMouseOver" Value="True">
-					<Setter Property="Background" Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarOptionsMouseDownBackgroundHorizontalGradientKey}}" />
-				</Trigger>
-			</Style.Triggers>
-		</Style>
+		<StaticResource ResourceKey="StatusBarControlStyle" />
 	</UserControl.Style>
 
+	<!-- ==== Content ================================================================================================================= -->
 	<DockPanel>
 
 		<ProgressBar
 			DockPanel.Dock="Bottom"
+			Style			="{StaticResource UsageProgressBarStyle}"
+			Visibility		="{Binding PremiumInteractionsUsedPercent, Converter={StaticResource NullToVisibility}}"
 			Margin			="0"
-
-			BorderThickness	="0"
+			Padding			="0"
 			Height			="3"
 
 			Minimum			="0"
 			Maximum			="1"
 			Value			="{Binding PremiumInteractionsUsedPercent, Mode=OneWay}"
 
-			Foreground		="red"
+			d:Visibility	="Visible"
+			d:Background	="#FFA0A0A0"
+			d:Foreground	="LightGray"
+			d:Value			="{StaticResource PreviewProgress}"
 			/>
 
 		<StackPanel
