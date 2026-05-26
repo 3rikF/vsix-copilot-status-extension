@@ -167,7 +167,7 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 			if (copilotInfo is null || string.IsNullOrEmpty(copilotInfo.Username) || string.IsNullOrEmpty(copilotInfo.AccessToken))
 			{
 				await JoinableTaskFactory.SwitchToMainThreadAsync();
-				_statusControl.SetData(null, null, null);
+				_statusControl.SetData(null, null, null, null);
 
 				return;
 			}
@@ -183,14 +183,14 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 
 
 			//--- Personal Metrics --------------------------------------------
-			(int chatStatusCode, string chatReasonPhrase, CopilotQuotaResponse? personalQuota) = await _gitHubService
+			(int chatStatusCode, string chatReasonPhrase, CopilotQuotaResponse? personalQuota, RateLimitInfo? apiRateLimit) = await _gitHubService
 				.FetchUserChatUsageAsync(copilotInfo.AccessToken)
 				.ConfigureAwait(false);
 
 
 			//--- Update Status UI --------------------------------------------
 			await JoinableTaskFactory.SwitchToMainThreadAsync();
-			_statusControl.SetData(copilotInfo, billingUsage, personalQuota);
+			_statusControl.SetData(copilotInfo, billingUsage, personalQuota, apiRateLimit);
 		}
 		catch (Exception ex)
 		{

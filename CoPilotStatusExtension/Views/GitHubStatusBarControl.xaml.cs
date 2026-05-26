@@ -52,6 +52,7 @@ public partial class GitHubStatusBarControl : UserControl
 	/// That also includes the remaining quota percentage which is used to display the status text in the status bar.
 	/// </summary>
 	private CopilotQuotaResponse? _personalQuota;
+	private RateLimitInfo? _apiRateLimit;
 
 	#endregion Fields
 
@@ -145,11 +146,12 @@ public partial class GitHubStatusBarControl : UserControl
 	//-----------------------------------------------------------------------------------------------------------------
 	#region Methods
 
-	public void SetData(CopilotUserInfo? copilotUserInfo, CopilotBillingUsage? billingUsage, CopilotQuotaResponse? personalQuota)
+	public void SetData(CopilotUserInfo? copilotUserInfo, CopilotBillingUsage? billingUsage, CopilotQuotaResponse? personalQuota, RateLimitInfo? apiRateLimit)
 	{
 		_basicCopilotUserInfo	= copilotUserInfo;
 		_githubBillingUsage		= billingUsage;
 		_personalQuota			= personalQuota;
+		_apiRateLimit			= apiRateLimit;
 
 		UpdateStatusText();
 		UpdateToolTip();
@@ -177,8 +179,6 @@ public partial class GitHubStatusBarControl : UserControl
 
 		StatusText = sb.ToString();
 	}
-
-
 
 	private void UpdateToolTip()
 	{
@@ -250,6 +250,21 @@ public partial class GitHubStatusBarControl : UserControl
 		else
 		{
 			_ = sb.AppendLine("Personal quota and usage information is not available.");
+		}
+
+		//--- API rate limit --------------------------------------------------
+		if (_apiRateLimit is not null)
+		{
+			_ = sb
+				.AppendLine()
+				.AppendLine("--- GitHub API Rate Limit ---")
+				.AppendLine($"   Limit:			{_apiRateLimit.Limit}")
+				.AppendLine($"   Remaining:		{_apiRateLimit.Remaining}")
+				.AppendLine($"   Reset At:		{_apiRateLimit.Reset}");
+		}
+		else
+		{
+			_ = sb.AppendLine("GitHub API rate limit information is not available.");
 		}
 
 		//--- return result ---------------------------------------------------

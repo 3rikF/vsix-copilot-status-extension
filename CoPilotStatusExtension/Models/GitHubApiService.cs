@@ -26,87 +26,6 @@ internal sealed class GitHubApiService
 	#endregion Fields
 
 	//-----------------------------------------------------------------------------------------------------------------
-	#region Token
-
-	///// <summary>
-	///// Tries to retrieve a GitHub token.
-	///// Priority: GH_TOKEN → GITHUB_TOKEN → git credential manager
-	///// Returns null if no token is available.
-	///// </summary>
-	//public Task<(string username, string token)> GetTokenAsync()
-	//{
-	//	// 1. Environment variables (set by gh CLI or user)
-	//	//string? token = Environment.GetEnvironmentVariable("GH_TOKEN")
-	//	//	?? Environment.GetEnvironmentVariable("GITHUB_TOKEN");
-	//	//
-	//	//if (!string.IsNullOrEmpty(token))
-	//	//	return Task.FromResult<string?>(token);
-	//
-	//	// 2. Ask git credential manager
-	//	(string? username, string? token) = TryGetTokenFromGitCredentialManager();
-	//
-	//	return Task.FromResult((
-	//		string.IsNullOrWhiteSpace(username)	? string.Empty : username!
-	//		, string.IsNullOrWhiteSpace(token)	? string.Empty : token!
-	//		));
-	//}
-
-	//private static (string? username, string? token) TryGetTokenFromGitCredentialManager()
-	//{
-	//	try
-	//	{
-	//		ProcessStartInfo psi = new("git", "credential fill")
-	//		{
-	//			RedirectStandardInput	= true,
-	//			RedirectStandardOutput	= true,
-	//			RedirectStandardError	= true,
-	//			UseShellExecute			= false,
-	//			CreateNoWindow			= true,
-	//		};
-	//
-	//		using Process process = Process.Start(psi)!;
-	//		process.StandardInput.WriteLine("protocol=https");
-	//		process.StandardInput.WriteLine("host=github.com");
-	//		process.StandardInput.WriteLine(string.Empty);
-	//		process.StandardInput.Close();
-	//
-	//		string output = process.StandardOutput.ReadToEnd();
-	//		_ = process.WaitForExit(3000);
-	//
-	//		string[] outputLines = output.Split('\n');
-	//
-	//		return (
-	//			ParseUSernameFromGitCredentialOutput(outputLines)
-	//			, ParseTokenFromGitCredentialOutput(outputLines)
-	//			);
-	//	}
-	//	catch
-	//	{
-	//		// git not available or credential manager not configured
-	//	}
-	//
-	//	return (null, null);
-	//}
-
-	//private static string? ParseUSernameFromGitCredentialOutput(string[] outputLines)
-	//{
-	//	return outputLines
-	//		.FirstOrDefault(line => line.StartsWith("username=", StringComparison.OrdinalIgnoreCase))
-	//		?.Substring("username=".Length)
-	//		.Trim();
-	//}
-	//
-	//private static string? ParseTokenFromGitCredentialOutput(string[] outputLines)
-	//{
-	//	return outputLines
-	//		.FirstOrDefault(line => line.StartsWith("password=", StringComparison.OrdinalIgnoreCase))
-	//		?.Substring("password=".Length)
-	//		.Trim();
-	//}
-
-	#endregion Token
-
-	//-----------------------------------------------------------------------------------------------------------------
 	#region API
 
 	/// <summary>
@@ -181,16 +100,17 @@ internal sealed class GitHubApiService
 		}
 	}
 
-	public async Task<(int StatusCode, string ReasonPhrase, CopilotQuotaResponse? Quota)> FetchUserChatUsageAsync(string personalAccessToken)
+	public async Task<(int StatusCode, string ReasonPhrase, CopilotQuotaResponse? Quota, RateLimitInfo? RateLimit)> FetchUserChatUsageAsync(string personalAccessToken)
 	{
 		const string API_ENDPOINT		= "https://api.github.com/copilot_internal/user";
 		using HttpRequestMessage  req	= BuildRequest(HttpMethod.Get, API_ENDPOINT, personalAccessToken);
 		using HttpResponseMessage res	= await HttpClientInstance.SendAsync(req).ConfigureAwait(false);
 
 		string serializedJsonPayload	= await res.Content.ReadAsStringAsync().ConfigureAwait(false);
+		RateLimitInfo? rateLimit		= RateLimitInfo.FromHeaders(res.Headers);
 
 		if (!res.IsSuccessStatusCode)
-			return ((int)res.StatusCode, res.ReasonPhrase, null);
+			return ((int)res.StatusCode, res.ReasonPhrase, null, rateLimit);
 		else
 		{
 			return
@@ -198,6 +118,7 @@ internal sealed class GitHubApiService
 					(int)res.StatusCode
 					, res.ReasonPhrase
 					, JsonConvert.DeserializeObject<CopilotQuotaResponse>(serializedJsonPayload)
+					, rateLimit
 				);
 		}
 	}
