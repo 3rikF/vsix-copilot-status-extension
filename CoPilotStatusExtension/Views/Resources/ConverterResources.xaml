@@ -31,11 +31,19 @@
 	<conv:IsLessThenConverter				x:Key="IsLessThen" />
 	<conv:IsGreaterThenConverter			x:Key="IsGreaterThen" />
 
+	<conv:ProgressSegmentBrushConverter		x:Key="ProgressSegmentBrush" />
+
 	<!-- ==== Special/unique Stuff ==== -->
 	<!--
 	<conv:EmptyStringToNullConverter		x:Key="EmptyStringToNull" />
 	<conv:EscapeMenuUnderscoresConverter	x:Key="EscapeMenuUnderscores" />
 	-->
+	<!--<conv:UnixMillisecondsToDateTimeConverter	x:Key="UnixMillisecondsToDateTime" />-->
+	<conv:UtcToLocalConverter					x:Key="UtcToLocal" />
+	<conv:StatusToTextConverter					x:Key="StatusToText" />
+	<conv:SubscriptionToTextConverter			x:Key="SubscriptionToText" />
+	<conv:CopilotPlanToTextConverter			x:Key="CopilotPlanToText" />
+	<conv:BoolToTextConverter					x:Key="BoolToText" />
 
 
 </ResourceDictionary>

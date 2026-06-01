@@ -2,6 +2,11 @@
 	xmlns			="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x			="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:vsshell	="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
+	xmlns:ice		="http://schemas.microsoft.com/winfx/2006/xaml/presentation/options"
+
+	xmlns:mc		="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:d			="http://schemas.microsoft.com/expression/blend/2008"
+	mc:Ignorable	="d"
 	>
 
 	<!-- ==== Merged Dictionaries ===================================================================================================== -->
@@ -11,7 +16,12 @@
 	</ResourceDictionary.MergedDictionaries>
 
 	<!-- ==== UserControl: StatusBar Item ============================================================================================= -->
-	<Style x:Key="StatusBarControlStyle" TargetType="UserControl">
+	<Style
+		x:Key		="StatusBarControlStyle"
+		TargetType	="UserControl"
+		ice:Freeze	="true"
+		>
+
 		<Setter Property="Background" Value="Transparent" />
 		<Style.Triggers>
 			<Trigger Property="IsMouseOver" Value="True">
@@ -28,13 +38,22 @@
 		  > 0.75  →  Crimson        (critical)
 		DataTriggers are evaluated top-to-bottom; later matching trigger wins.
 	-->
-	<Style x:Key="UsageProgressBarStyle" TargetType="ProgressBar">
+	<Style
+		x:Key		="UsageProgressBarStyle"
+		TargetType	="ProgressBar"
+		ice:Freeze	="true"
+		>
 
+		<Setter Property="Minimum"			Value="0" />
+		<Setter Property="Maximum"			Value="1" />
 		<Setter Property="Background"		Value="{StaticResource ProgressBackground}" />
 		<Setter Property="Foreground"		Value="{StaticResource BrushQuotaSave}" />
 		<Setter Property="BorderThickness"	Value="0" />
-		<!--<Setter Property="BorderBrush"	Value="{StaticResource BrushQuotaSave}" />-->
-		<!--<Setter Property="BorderBrush"	Value="{StaticResource BrushQuotaSave}" />-->
+
+		<Setter Property="d:Visibility"		Value="Visible" />
+		<Setter Property="d:Background"		Value="#FFA0A0A0" />
+		<Setter Property="d:Foreground"		Value="LightGray" />
+		<Setter Property="d:Value"			Value="{StaticResource PreviewProgress}" />
 
 		<Style.Triggers>
 			<DataTrigger Value="True">
