@@ -77,6 +77,17 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 	public CopilotQuotaResponse? PersonalInfo
 		=> _personalQuota;
 
+	public string? UserProfileUrl
+	{
+		get
+		{
+			string? login = _personalQuota?.Login;
+			return string.IsNullOrEmpty(login)
+				? null
+				: $"https://github.com/{login}";
+		}
+	}
+
 	#endregion UI Bindable Properties
 
 	//-----------------------------------------------------------------------------------------------------------------

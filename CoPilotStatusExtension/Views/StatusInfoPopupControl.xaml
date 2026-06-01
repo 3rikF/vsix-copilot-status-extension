@@ -1,18 +1,19 @@
 ﻿<UserControl
-	x:Class			="CoPilotStatusExtension.Views.StatusInfoPopupControl"
-	xmlns			="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:x			="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:sys		="clr-namespace:System;assembly=mscorlib"
-	xmlns:vsshell	="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
-	xmlns:localVM	="clr-namespace:CoPilotStatusExtension.ViewModels"
+	x:Class				="CoPilotStatusExtension.Views.StatusInfoPopupControl"
+	xmlns				="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x				="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:sys			="clr-namespace:System;assembly=mscorlib"
+	xmlns:vsshell		="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.15.0"
+	xmlns:platformUI	="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.15.0"
+	xmlns:localVM		="clr-namespace:CoPilotStatusExtension.ViewModels"
 
-	xmlns:mc		="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:d			="http://schemas.microsoft.com/expression/blend/2008"
-	mc:Ignorable	="d"
-	d:DataContext	="{d:DesignInstance Type=localVM:GitHubStatusBarViewModel}"
-	d:Background	="LightGray"
+	xmlns:mc			="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:d				="http://schemas.microsoft.com/expression/blend/2008"
+	mc:Ignorable		="d"
+	d:DataContext		="{d:DesignInstance Type=localVM:GitHubStatusBarViewModel}"
+	d:Background		="LightGray"
 
-	Foreground		="{DynamicResource {x:Static vsshell:VsBrushes.PanelTextKey}}"
+	Foreground			="{DynamicResource {x:Static vsshell:VsBrushes.PanelTextKey}}"
 	>
 
 	<!-- ==== Resources =============================================================================================================== -->
@@ -70,10 +71,11 @@
 						BorderThickness		="0.5"
 						/>
 					<ProgressBar
+						x:Name="Test"
 						Style				="{StaticResource UsageProgressBarStyle}"
 						Background			="Transparent"
 						BorderBrush			="Transparent"
-						Foreground			="{DynamicResource {x:Static vsshell:VsBrushes.BrandedUIBorderKey}}"
+						Foreground			="{DynamicResource {x:Static platformUI:EnvironmentColors.MainWindowActiveIconDefaultBrushKey}}"
 						Value				="{Binding PremiumInteractionsUsedPercent, Mode=OneWay}"
 						d:Value				="{StaticResource PreviewProgress}"
 						/>
@@ -83,15 +85,14 @@
 				<!--BorderBrush		="{DynamicResource {x:Static vsshell:VsBrushes.SearchBoxBorderKey}}"-->
 
 					<!--Background		="{Binding PremiumInteractionsUsedPercent, Mode=OneWay, Converter={StaticResource ProgressSegmentBrush}, ConverterParameter={StaticResource BackgroundProgressOpacity}}"-->
-				<TextBlock
+				<platformUI:HyperlinkButton
 					DockPanel.Dock		="Left"
 					Margin				="{StaticResource TinyMarginTLBR}"
-					HorizontalAlignment	="Left"
+					Content				="{Binding PersonalInfo.Login}"
+					Tag					="{Binding UserProfileUrl}"
+					Click				="OnUserProfileClick"
 					FontSize			="14"
 					FontWeight			="Bold"
-					Foreground			="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarTextActiveKey}}"
-					Text				="{Binding PersonalInfo.Login}"
-					d:Text				="3rikF"
 					/>
 
 				<TextBlock
