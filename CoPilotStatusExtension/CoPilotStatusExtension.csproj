@@ -11,12 +11,17 @@
 
   <ItemGroup>
     <None Remove="Views\Resources\ConverterResources.xaml" />
+    <None Remove="Views\Resources\DefaultMargins.xaml" />
     <None Remove="Views\Resources\StaticResources.xaml" />
     <None Remove="Views\Resources\StyleResources.xaml" />
   </ItemGroup>
 
   <ItemGroup>
     <Page Include="Views\Resources\ConverterResources.xaml" />
+    <Page Include="Views\Resources\DefaultMargins.xaml">
+      <Generator></Generator>
+      <CopyToOutputDirectory></CopyToOutputDirectory>
+    </Page>
     <Page Include="Views\Resources\StaticResources.xaml" />
     <Page Include="Views\Resources\StyleResources.xaml" />
   </ItemGroup>
@@ -25,6 +30,7 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Views\GitHubStatusBarControl.xaml" />
+    <Page Include="Views\StatusInfoPopupControl.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -39,6 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Update="Views\GitHubStatusBarControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="Views\StatusInfoPopupControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
   </ItemGroup>

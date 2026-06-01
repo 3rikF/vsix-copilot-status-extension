@@ -48,4 +48,10 @@ public partial class GitHubStatusBarControl : UserControl
 		=> _viewModel.SetData(copilotUserInfo, billingUsage, personalQuota, apiRateLimit);
 
 	#endregion Methods
+
+	private void ctrlBarItem_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+	{
+		ctrlStatusPopup.IsOpen = true;
+		e.Handled = true;
+    }
 }
