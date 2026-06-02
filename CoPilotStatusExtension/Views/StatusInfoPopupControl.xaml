@@ -32,11 +32,66 @@
 			<sys:Double x:Key="BackgroundProgressOpacity">0.5</sys:Double>
 
 			<!-- ================================================================================================== -->
+			<Style TargetType="Expander" BasedOn="{StaticResource {x:Type Expander}}">
+				<Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarTextActiveKey}}" />
+			</Style>
+
 			<Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
 				<Setter Property="IsHitTestVisible"		Value="False" />
 				<Setter Property="Focusable"			Value="False" />
-				<Setter Property="HorizontalAlignment"	Value="Left" />
+				<Setter Property="HorizontalAlignment"	Value="Center" />
 				<Setter Property="VerticalAlignment"	Value="Center" />
+			</Style>
+
+			<!-- information group border style -->
+			<Style
+				x:Key		="InformationGroupBorderStyle"
+				TargetType	="Border"
+				>
+
+				<Setter Property="Background"		Value="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"/>
+				<Setter Property="BorderBrush"		Value="Transparent"/>
+				<!--<Setter Property="BorderBrush"		Value="{DynamicResource {x:Static platformUI:EnvironmentColors.SystemInactiveBorderBrushKey}}"/>-->
+				<Setter Property="BorderThickness"	Value="1"/>
+
+				<Setter Property="CornerRadius"		Value="5"/>
+				<Setter Property="Margin"			Value="{StaticResource SmallMarginTL}"/>
+				<Setter Property="Padding"			Value="{StaticResource SmallMarginBR}"/>
+
+				<!--<Setter Property="Effect">
+					<Setter.Value>
+						<DropShadowEffect
+							BlurRadius	="8"
+							Color		="{DynamicResource {x:Static platformUI:EnvironmentColors.SystemThreeDDarkShadowColorKey}}"
+							Direction	="-90"
+							Opacity		="0.4"
+							ShadowDepth	="3"
+							/>
+					</Setter.Value>
+				</Setter>-->
+
+				<Style.Triggers>
+					<Trigger Property="IsMouseOver" Value="True">
+
+						<!--<Setter Property="BorderBrush"	Value="{DynamicResource {x:Static vsshell:VsBrushes.HighlightKey}}"/>-->
+						<!--<Setter Property="Background"	Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarHoverOverSelectedKey}}"/>-->
+						<Setter Property="Background"	Value="{DynamicResource {x:Static vsshell:VsBrushes.ToolWindowTabMouseOverBackgroundBeginKey}}"/>
+						<!--<Setter Property="Background"	Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarOptionsMouseOverBackgroundBeginKey}}"/>-->
+
+						<!--<Setter Property="Effect">
+							<Setter.Value>
+								<DropShadowEffect
+									BlurRadius	="12"
+									Color		="{DynamicResource {x:Static platformUI:EnvironmentColors.SystemHighlightColorKey}}"
+									Direction	="-90"
+									Opacity		="0.3"
+									ShadowDepth	="5"
+									/>
+							</Setter.Value>
+						</Setter>-->
+					</Trigger>
+				</Style.Triggers>
+
 			</Style>
 
 		</ResourceDictionary>
@@ -49,7 +104,7 @@
 		BorderThickness	="1"
 		MinWidth		="300"
 		>
-		<StackPanel
+		<platformUI:GroupStackPanel
 			Margin ="{StaticResource SmallMarginBR}"
 			>
 
@@ -60,6 +115,7 @@
 				>
 
 				<Grid
+					Margin	="{StaticResource SmallMarginT}"
 					DockPanel.Dock	="Bottom"
 					>
 					<Separator
@@ -84,11 +140,12 @@
 				<!--Background		="{DynamicResource MouseOverBackground}"-->
 				<!--BorderBrush		="{DynamicResource {x:Static vsshell:VsBrushes.SearchBoxBorderKey}}"-->
 
-					<!--Background		="{Binding PremiumInteractionsUsedPercent, Mode=OneWay, Converter={StaticResource ProgressSegmentBrush}, ConverterParameter={StaticResource BackgroundProgressOpacity}}"-->
+				<!--Background		="{Binding PremiumInteractionsUsedPercent, Mode=OneWay, Converter={StaticResource ProgressSegmentBrush}, ConverterParameter={StaticResource BackgroundProgressOpacity}}"-->
 				<platformUI:HyperlinkButton
 					DockPanel.Dock		="Left"
 					Margin				="{StaticResource TinyMarginTLBR}"
-					Content				="{Binding PersonalInfo.Login}"
+					Content				="{Binding PersonalInfo.Login, StringFormat='{}{0}🔗'}"
+					d:Content			="3rikF"
 					Tag					="{Binding UserProfileUrl}"
 					Click				="OnUserProfileClick"
 					FontSize			="14"
@@ -109,81 +166,250 @@
 			</DockPanel>
 
 			<!-- ================================================================================================== -->
+			<StackPanel
+				Margin		="{StaticResource SmallMarginTL}"
+				Orientation	="Horizontal"
+				>
+
+				<!-- ==== Line 17 ==== -->
+				<TextBlock Text="🕒 Limits will be reset on "/>
+				<TextBlock Text="{Binding PersonalInfo.QuotaResetDateUtc, Converter={StaticResource UtcToLocal}, StringFormat=g}"/>
+			</StackPanel>
+
+			<Border
+				Style			="{StaticResource InformationGroupBorderStyle}"
+				>
+				<Expander
+					Margin		="{StaticResource SmallMarginTL}"
+					Header		="Extended Information"
+					IsExpanded	="False"
+					Foreground	="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarTextActiveKey}}"
+					>
+
+					<Grid
+						Margin	="{StaticResource SmallMarginTL}"
+						>
+
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="auto"/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+
+						<Grid.RowDefinitions>
+							<RowDefinition Height="auto"/>
+							<RowDefinition Height="auto"/>
+							<RowDefinition Height="auto"/>
+							<RowDefinition Height="auto"/>
+						</Grid.RowDefinitions>
+
+						<!-- ==== Line 1 ==== -->
+						<TextBlock
+							Grid.Column	="0"
+							Grid.Row	="0"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							Text		="🧑🏻‍💼 Copilot Plan:"/>
+						<TextBlock
+							Grid.Column	="1"
+							Grid.Row	="0"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							Text		="{Binding PersonalInfo.CopilotPlan, Converter={StaticResource CopilotPlanToText}}"
+							HorizontalAlignment="Right"/>
+
+						<!-- ==== Line 2 ==== -->
+						<TextBlock
+							Grid.Column	="0"
+							Grid.Row	="1"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							Text		="📦 Access Type SKU:"/>
+						<TextBlock
+							Grid.Column	="1"
+							Grid.Row	="1"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							Text		="{Binding PersonalInfo.AccessTypeSku, Converter={StaticResource SubscriptionToText}}"
+							HorizontalAlignment="Right"/>
+
+						<!-- ==== Line 3 ==== -->
+						<TextBlock
+							Grid.Column	="0"
+							Grid.Row	="2"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							Text		="📆 Assigned Date:"/>
+						<TextBlock
+							Grid.Column	="1"
+							Grid.Row	="2"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							Text		="{Binding PersonalInfo.AssignedDate, Converter={StaticResource UtcToLocal}, StringFormat=g}"
+							HorizontalAlignment="Right"/>
+
+						<!-- ==== Line 4 ==== -->
+						<TextBlock
+							Grid.Column	="0"
+							Grid.Row	="3"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							Text		="🚫 Restricted Telemetry:"/>
+						<TextBlock
+							Grid.Column	="1"
+							Grid.Row	="3"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							Text		="{Binding PersonalInfo.RestrictedTelemetry, Converter={StaticResource BoolToText},ConverterParameter='restricted;unrestricted'}"
+							HorizontalAlignment="Right"/>
+
+					</Grid>
+				</Expander>
+			</Border>
+
+			<Border
+				Style			="{StaticResource InformationGroupBorderStyle}"
+				>
+				<Expander
+					Margin		="{StaticResource SmallMarginTL}"
+					Header		="CoPilot Features"
+					IsExpanded	="False"
+					>
+
+					<Grid
+						Margin	="{StaticResource SmallMarginTL}"
+						>
+
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="auto"/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+
+						<Grid.RowDefinitions>
+							<RowDefinition Height="auto"/>
+							<RowDefinition Height="auto"/>
+							<RowDefinition Height="auto"/>
+							<RowDefinition Height="auto"/>
+							<RowDefinition Height="auto"/>
+							<RowDefinition Height="auto"/>
+							<RowDefinition Height="auto"/>
+							<RowDefinition Height="auto"/>
+							<RowDefinition Height="auto"/>
+						</Grid.RowDefinitions>
+
+						<!-- ==== Line 1 ==== -->
+						<TextBlock
+							Grid.Column	="0"
+							Grid.Row	="0"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							Text		="💬 Chat"/>
+						<CheckBox
+							Grid.Column	="1"
+							Grid.Row	="0"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							IsChecked	="{Binding PersonalInfo.ChatEnabled}" />
+
+						<!-- ==== Line 2 ==== -->
+						<TextBlock
+							Grid.Column	="0"
+							Grid.Row	="1"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							Text		="🗔 CLI"/>
+						<CheckBox
+							Grid.Column	="1"
+							Grid.Row	="1"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							IsChecked	="{Binding PersonalInfo.CliEnabled}" />
+
+						<!-- ==== Line 7 ==== -->
+						<TextBlock
+							Grid.Column	="0"
+							Grid.Row	="2"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							Text		="📡 CLI Remote Control"/>
+						<CheckBox
+							Grid.Column	="1"
+							Grid.Row	="2"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							IsChecked	="{Binding PersonalInfo.CliRemoteControlEnabled}" />
+
+						<!-- ==== Line 3 ==== -->
+						<TextBlock
+							Grid.Column	="0"
+							Grid.Row	="3"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							Text		="🔌 MCP"/>
+						<CheckBox
+							Grid.Column	="1"
+							Grid.Row	="3"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							IsChecked	="{Binding PersonalInfo.IsMcpEnabled}"
+							/>
+
+						<!-- ==== Line 5 ==== -->
+						<TextBlock
+							Grid.Column	="0"
+							Grid.Row	="4"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							Text		="🔬 Preview Features"/>
+						<CheckBox
+							Grid.Column	="1"
+							Grid.Row	="4"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							IsChecked	="{Binding PersonalInfo.EditorPreviewFeaturesEnabled}" />
+
+						<!-- ==== Line 4==== -->
+						<TextBlock
+							Grid.Column	="0"
+							Grid.Row	="5"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							Text		="🙈 Copilot Ignore"/>
+						<CheckBox
+							Grid.Column	="1"
+							Grid.Row	="5"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							IsChecked	="{Binding PersonalInfo.CopilotIgnoreEnabled}" />
+
+						<!-- ==== Line 6 ==== -->
+						<TextBlock
+							Grid.Column	="0"
+							Grid.Row	="6"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							Text		="☁️ Cloud Session Storage"/>
+						<CheckBox
+							Grid.Column	="1"
+							Grid.Row	="6"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							IsChecked	="{Binding PersonalInfo.CloudSessionStorageEnabled}" />
+
+
+
+						<!-- ==== Line 8 ==== -->
+						<!--
+						<TextBlock Text="Login:"/>
+						<TextBlock Text="{Binding PersonalInfo.Login}"/>
+						-->
+
+						<!-- ==== Line 9 ==== -->
+						<!--
+						<TextBlock Text="Analytics Tracking ID:"/>
+						<TextBlock Text="{Binding PersonalInfo.AnalyticsTrackingId}"/>
+						-->
+
+						<!-- ==== Line 10 ==== -->
+						<!--<TextBlock
+							Grid.Column	="0"
+							Grid.Row	="9"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							Text		="Can Sign-up For Limited:"/>
+						<CheckBox
+							Grid.Column	="1"
+							Grid.Row	="9"
+							Margin		="{StaticResource NormalLowMarginTL}"
+							IsChecked	="{Binding PersonalInfo.CanSignupForLimited}"/>-->
+					</Grid>
+				</Expander>
+			</Border>
+
+
 			<UniformGrid
 				Margin	="{StaticResource NormalLowMarginTL}"
 				Columns	="2">
 
-				<!-- ==== Line 1 ==== -->
-				<TextBlock Text		="Assigned Date:"/>
-				<TextBlock Text		="{Binding PersonalInfo.AssignedDate, Converter={StaticResource UtcToLocal}, StringFormat=g}"/>
 
-				<!-- ==== Line 9 ==== -->
-				<TextBlock Text		="Copilot Plan:"/>
-				<TextBlock Text		="{Binding PersonalInfo.CopilotPlan, Converter={StaticResource CopilotPlanToText}}"/>
-
-				<!-- ==== Line 3 ==== -->
-				<TextBlock Text		="Access Type SKU:"/>
-				<TextBlock Text		="{Binding PersonalInfo.AccessTypeSku, Converter={StaticResource SubscriptionToText}}"/>
-
-				<!-- ==== Line 17 ==== -->
-				<TextBlock Text="Quota Reset Date UTC:"/>
-				<TextBlock Text="{Binding PersonalInfo.QuotaResetDateUtc, Converter={StaticResource UtcToLocal}, StringFormat=g}"/>
-
-
-				<!-- ==== Line 6 ==== -->
-				<TextBlock Text		="Chat Enabled:"/>
-				<CheckBox IsChecked	="{Binding PersonalInfo.ChatEnabled}" />
-
-				<!-- ==== Line 7 ==== -->
-				<TextBlock Text		="CLI Enabled:"/>
-				<CheckBox IsChecked	="{Binding PersonalInfo.CliEnabled}" />
-
-				<!-- ==== Line 11 ==== -->
-				<TextBlock Text		="MCP Enabled:"/>
-				<CheckBox IsChecked	="{Binding PersonalInfo.IsMcpEnabled}" />
-
-				<!-- ==== Line 8 ==== -->
-				<TextBlock Text		="Copilot Ignore Enabled:"/>
-				<CheckBox IsChecked	="{Binding PersonalInfo.CopilotIgnoreEnabled}" />
-
-				<!-- ==== Line 10 ==== -->
-				<TextBlock Text		="Preview Features Enabled:"/>
-				<CheckBox IsChecked	="{Binding PersonalInfo.EditorPreviewFeaturesEnabled}" />
-
-				<!-- ==== Line 13 ==== -->
-				<TextBlock Text		="Cloud Session Storage Enabled:"/>
-				<CheckBox IsChecked	="{Binding PersonalInfo.CloudSessionStorageEnabled}" />
-
-				<!-- ==== Line 14 ==== -->
-				<TextBlock Text		="CLI Remote Control Enabled:"/>
-				<CheckBox IsChecked	="{Binding PersonalInfo.CliRemoteControlEnabled}" />
-
-				<!-- ==== Line 2 ==== -->
-				<!--
-				<TextBlock Text="Login:"/>
-				<TextBlock Text="{Binding PersonalInfo.Login}"/>
-				-->
-
-				<!-- ==== Line 4 ==== -->
-				<!--
-				<TextBlock Text="Analytics Tracking ID:"/>
-				<TextBlock Text="{Binding PersonalInfo.AnalyticsTrackingId}"/>
-				-->
-
-				<!-- ==== Line 5 ==== -->
-				<TextBlock
-					Text="Can Signup For Limited:"/>
-
-				<CheckBox
-					IsChecked="{Binding PersonalInfo.CanSignupForLimited}"
-					/>
 
 				<!-- ==== Line 12 ==== -->
-				<TextBlock
-					Text="Restricted Telemetry:"/>
-
-				<TextBlock
-					Text="{Binding PersonalInfo.RestrictedTelemetry, Converter={StaticResource BoolToText},ConverterParameter='restricted;unrestricted'}"/>
 
 				<!-- ==== Line 15 ==== -->
 				<!--<TextBlock
@@ -202,7 +428,7 @@
 			</UniformGrid>
 
 			<!-- ================================================================================================== -->
-			<Separator
+			<!--<Separator
 				Margin				="{StaticResource SmallMarginTL}"
 				VerticalAlignment	="Center"
 				HorizontalAlignment	="Stretch"
@@ -210,144 +436,148 @@
 				BorderBrush			="{DynamicResource {x:Static vsshell:VsBrushes.PanelSubGroupSeparatorKey}}"
 				BorderThickness		="0.5"
 				d:BorderBrush		="black"
-				/>
-
+				/>-->
 
 			<!-- ==== Quote List ================================================================================== -->
-			<ItemsControl
-				Margin			="{StaticResource SmallMarginTL}"
-				ItemsSource		="{Binding QuotaDetails}"
-				d:ItemsSource	="{d:SampleData ItemCount=3}"
-
-				Background				="Transparent"
-				BorderBrush				="Transparent"
-				BorderThickness			="0"
+			<Border
+				Style ="{StaticResource InformationGroupBorderStyle}"
 				>
 
-				<ItemsControl.ItemTemplate>
-					<DataTemplate>
-						<Grid
-							Margin="{StaticResource TinyMarginBR}">
+				<ItemsControl
+					Margin			="{StaticResource SmallMarginTL}"
+					ItemsSource		="{Binding QuotaDetails}"
+					d:ItemsSource	="{d:SampleData ItemCount=3}"
 
-							<UniformGrid
-								Columns			="2"
-								Visibility		="{Binding Unlimited, Converter={StaticResource BoolToVisibility}}"
-								d:Visibility	="Collapsed"
-								>
+					Background				="Transparent"
+					BorderBrush				="Transparent"
+					BorderThickness			="0"
+					>
 
-								<TextBlock
-									Margin		="{StaticResource TinyMarginTL}"
-									FontWeight	="Bold"
-									Text		="{Binding QuotaId, StringFormat='{}{0}:'}"
-									/>
-
-
-								<TextBlock
-									Margin				="{StaticResource TinyMarginTL}"
-									Text				="Unlimited"
-									HorizontalAlignment	="Right"
-									/>
-
-							</UniformGrid>
-
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
 							<Grid
-								Visibility		="{Binding Unlimited, Converter={StaticResource BoolToVisibility}, ConverterParameter=!}"
-								d:Visibility	="Visible"
-								>
+								Margin="{StaticResource TinyMarginBR}">
 
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="1*"/>
-									<ColumnDefinition Width="2*" />
-								</Grid.ColumnDefinitions>
-
-								<Grid.RowDefinitions>
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="Auto" />
-								</Grid.RowDefinitions>
-
-								<!-- ==== Line 1 ==== -->
-								<TextBlock
-									Grid.Row	="0"
-									Grid.Column	="0"
-									Grid.ColumnSpan	="2"
-									Margin		="{StaticResource TinyMarginTL}"
-									FontWeight	="Bold"
-									Text		="{Binding QuotaId, StringFormat='{}{0}:'}"
-									d:Text		="Quota Category"
-									/>
-
-								<!-- ==== Line 2 ==== -->
-								<TextBlock
-									Grid.Row	="1"
-									Grid.Column	="0"
-									Margin		="{StaticResource NormalLowMarginTL}"
-									Text		="AI-Credits:"
-									/>
-
-								<StackPanel
-									Grid.Row	="1"
-									Grid.Column	="1"
-									Orientation	="Horizontal"
-									Margin		="{StaticResource TinyMarginTL}"
+								<UniformGrid
+									Columns			="2"
+									Visibility		="{Binding Unlimited, Converter={StaticResource BoolToVisibility}}"
+									d:Visibility	="Collapsed"
 									>
-									<TextBlock Text ="{Binding Remaining}" />
-									<TextBlock Text =" of " />
-									<TextBlock Text ="{Binding Entitlement}" />
-									<TextBlock Text =" used" />
-								</StackPanel>
 
-								<!-- ==== Line 3 ==== -->
-								<TextBlock
-									Grid.Row	="2"
-									Grid.Column	="0"
-									Margin		="{StaticResource NormalLowMarginTL}"
-									Text		="Overage:"
-									/>
+									<TextBlock
+										Margin		="{StaticResource TinyMarginTL}"
+										FontWeight	="Bold"
+										Text		="{Binding QuotaId, StringFormat='{}{0}:'}"
+										/>
 
-								<TextBlock
-									Grid.Row	="2"
-									Grid.Column	="1"
-									Visibility	="{Binding OveragePermitted, Converter={StaticResource BoolToVisibility}, ConverterParameter=!}"
-									Margin		="{StaticResource TinyMarginTL}"
-									Text		="[Not Permitted]"
-									/>
 
-								<TextBlock
-									Grid.Row	="2"
-									Grid.Column	="1"
-									Visibility	="{Binding OveragePermitted, Converter={StaticResource BoolToVisibility}}"
-									Margin		="{StaticResource TinyMarginTL}"
-									Text		="{Binding OverageCount, StringFormat='{}{0} extra AIC used'}"
-									/>
+									<TextBlock
+										Margin				="{StaticResource TinyMarginTL}"
+										Text				="♾️ Unlimited"
+										HorizontalAlignment	="Right"
+										/>
 
-								<!-- ==== Line 4 ==== -->
-								<!--<TextBlock
-									Grid.Row	="3"
-									Grid.Column	="0"
-									Margin		="{StaticResource TinyMarginTL}"
-									Text		="Reset At:"
-									/>
+								</UniformGrid>
 
-								<TextBlock
-									Grid.Row	="3"
-									Grid.Column	="1"
-									Margin		="{StaticResource TinyMarginTL}"
-									Text		="{Binding TimestampUtc, Converter={StaticResource UtcToLocal}, StringFormat='{}{0:g}'}"
-									/>-->
+								<Grid
+									Visibility		="{Binding Unlimited, Converter={StaticResource BoolToVisibility}, ConverterParameter=!}"
+									d:Visibility	="Visible"
+									>
 
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="1*"/>
+										<ColumnDefinition Width="2*" />
+									</Grid.ColumnDefinitions>
+
+									<Grid.RowDefinitions>
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="Auto" />
+										<RowDefinition Height="Auto" />
+									</Grid.RowDefinitions>
+
+									<!-- ==== Line 1 ==== -->
+									<TextBlock
+										Grid.Row	="0"
+										Grid.Column	="0"
+										Grid.ColumnSpan	="2"
+										Margin		="{StaticResource TinyMarginTL}"
+										FontWeight	="Bold"
+										Text		="{Binding QuotaId, StringFormat='{}{0}:'}"
+										d:Text		="Quota Category"
+										/>
+
+									<!-- ==== Line 2 ==== -->
+									<TextBlock
+										Grid.Row	="1"
+										Grid.Column	="0"
+										Margin		="{StaticResource NormalLowMarginTL}"
+										Text		="💰 AI-Credits:"
+										/>
+
+									<StackPanel
+										Grid.Row	="1"
+										Grid.Column	="1"
+										Orientation	="Horizontal"
+										Margin		="{StaticResource TinyMarginTL}"
+										>
+										<TextBlock Text ="{Binding Remaining}" />
+										<TextBlock Text =" of " />
+										<TextBlock Text ="{Binding Entitlement}" />
+										<TextBlock Text =" used" />
+									</StackPanel>
+
+									<!-- ==== Line 3 ==== -->
+									<TextBlock
+										Grid.Row	="2"
+										Grid.Column	="0"
+										Margin		="{StaticResource NormalLowMarginTL}"
+										Text		="⚠️ Overage:"
+										/>
+
+									<TextBlock
+										Grid.Row	="2"
+										Grid.Column	="1"
+										Visibility	="{Binding OveragePermitted, Converter={StaticResource BoolToVisibility}, ConverterParameter=!}"
+										Margin		="{StaticResource TinyMarginTL}"
+										Text		="[Not Permitted]"
+										/>
+
+									<TextBlock
+										Grid.Row	="2"
+										Grid.Column	="1"
+										Visibility	="{Binding OveragePermitted, Converter={StaticResource BoolToVisibility}}"
+										Margin		="{StaticResource TinyMarginTL}"
+										Text		="{Binding OverageCount, StringFormat='{}{0} extra AIC used'}"
+										/>
+
+									<!-- ==== Line 4 ==== -->
+									<!--<TextBlock
+										Grid.Row	="3"
+										Grid.Column	="0"
+										Margin		="{StaticResource TinyMarginTL}"
+										Text		="Reset At:"
+										/>
+
+									<TextBlock
+										Grid.Row	="3"
+										Grid.Column	="1"
+										Margin		="{StaticResource TinyMarginTL}"
+										Text		="{Binding TimestampUtc, Converter={StaticResource UtcToLocal}, StringFormat='{}{0:g}'}"
+										/>-->
+
+								</Grid>
 							</Grid>
-						</Grid>
-					</DataTemplate>
+						</DataTemplate>
 
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</Border>
 
-		</StackPanel>
+		</platformUI:GroupStackPanel>
 	</Border>
 </UserControl>

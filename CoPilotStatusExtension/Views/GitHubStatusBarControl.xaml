@@ -17,6 +17,7 @@
 	d:Background		="Gray"
 	d:Foreground		="white"
 	d:DataContext		="{d:DesignInstance Type=localVM:GitHubStatusBarViewModel}"
+	MouseLeftButtonUp ="ctrlBarItem_MouseLeftButtonUp"
 	>
 
 	<!-- ==== Resources =============================================================================================================== -->
@@ -41,7 +42,8 @@
 	</UserControl.Style>
 
 	<!-- ==== Content ================================================================================================================= -->
-	<Grid>
+	<Grid >
+
 		<!-- ==== Pop-Up ========================================================================================== -->
 		<Popup
 			x:Name				="ctrlStatusPopup"
@@ -49,9 +51,7 @@
 			Placement			="Top"
 			VerticalOffset		="-4"
 
-
 			StaysOpen			="False"
-			IsOpen				="{Binding IsToolTipOpen}"
 			AllowsTransparency	="True"
 			d:PopupAnimation	="Fade"
 			>
@@ -65,7 +65,6 @@
 		<!-- ==== Bar Item ======================================================================================== -->
 		<DockPanel
 			x:Name				="ctrlBarItem"
-			MouseLeftButtonUp	="ctrlBarItem_MouseLeftButtonUp"
 			>
 
 
@@ -136,9 +135,37 @@
 					>
 
 					<TextBlock.ToolTip>
-						<TextBlock
-							Text	="{Binding StatusToolTip}"
-							/>
+						<StackPanel>
+							<TextBlock
+								Text		="{Binding StatusToolTip}"
+								FontWeight	="Bold"
+								/>
+
+							<StackPanel
+								Visibility	="{Binding ApiRateLimitInfo, Converter={StaticResource NullToVisibility}}"
+								Orientation	="Horizontal"
+								>
+
+								<TextBlock
+									Text ="API Limit: "/>
+
+								<TextBlock
+									Text ="{Binding ApiRateLimitInfo.Used, Mode=OneWay}"/>
+
+								<TextBlock
+									Text =" / "/>
+
+								<TextBlock
+									Text ="{Binding ApiRateLimitInfo.Limit, Mode=OneWay}"/>
+
+								<TextBlock
+									Text =" used, ↩ "/>
+
+								<TextBlock
+									Text ="{Binding ApiRateLimitInfo.Reset, Converter={StaticResource UtcToLocal}, Mode=OneWay, StringFormat=t}"/>
+
+							</StackPanel>
+						</StackPanel>
 					</TextBlock.ToolTip>
 
 				</TextBlock>
