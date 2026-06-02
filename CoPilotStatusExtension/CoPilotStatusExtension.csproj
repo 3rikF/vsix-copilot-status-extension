@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="source.extension.vsixmanifest" />
     <Page Include="Views\Resources\ConverterResources.xaml" />
     <Page Include="Views\Resources\DefaultMargins.xaml">
       <Generator></Generator>
@@ -50,5 +51,8 @@
     <None Update="Views\StatusInfoPopupControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\Resources\Images\" />
   </ItemGroup>
 </Project>
