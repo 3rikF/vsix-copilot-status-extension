@@ -4,8 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Xml.Linq;
 
 using CoPilotStatusExtension.GitHubApiModels;
 using CoPilotStatusExtension.Models;
@@ -18,6 +22,8 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 {
 	//-----------------------------------------------------------------------------------------------------------------
 	#region Fields
+
+	private const string EXTENSION_NAME = "Copilot Status Extension";
 
 	private string _statusText		= string.Empty;
 
@@ -60,14 +66,17 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 			if (_personalQuota?.QuotaSnapshots is null)
 				yield break;
 
+			if (_personalQuota.QuotaSnapshots.PremiumInteractions is not null)
+				yield return _personalQuota.QuotaSnapshots.PremiumInteractions;
+
 			if (_personalQuota.QuotaSnapshots.Chat is not null)
 				yield return _personalQuota.QuotaSnapshots.Chat;
 
 			if (_personalQuota.QuotaSnapshots.Completions is not null)
 				yield return _personalQuota.QuotaSnapshots.Completions;
 
-			if (_personalQuota.QuotaSnapshots.PremiumInteractions is not null)
-				yield return _personalQuota.QuotaSnapshots.PremiumInteractions;
+			//if (_apiRateLimit is not null)
+			//	yield return _apiRateLimit;
 		}
 	}
 
@@ -76,6 +85,9 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 
 	public CopilotQuotaResponse? PersonalInfo
 		=> _personalQuota;
+
+	public RateLimitInfo ApiRateLimitInfo
+		=> _apiRateLimit;
 
 	public string? UserProfileUrl
 	{
@@ -132,10 +144,36 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 
 	private static string GetExtensionNameAndVersion()
 	{
-		Version? version = typeof(GitHubStatusBarViewModel).Assembly.GetName().Version;
-		return version is not null
-			? $"Copilot Status Extension v{version}"
-			: "Copilot Status Extension";
+		try
+		{
+			Assembly assembly = typeof(GitHubStatusBarViewModel).Assembly;
+			string resourceName = assembly.GetManifestResourceNames()
+				.FirstOrDefault(r => r.EndsWith("source.extension.vsixmanifest"));
+
+			if (resourceName is null)
+				return EXTENSION_NAME;
+
+			using Stream stream = assembly.GetManifestResourceStream(resourceName);
+			if (stream is null)
+				return EXTENSION_NAME;
+
+			XDocument doc = XDocument.Load(stream);
+			XNamespace ns = "http://schemas.microsoft.com/developer/vsx-schema/2011";
+
+			string? version = doc.Root?
+				.Element(ns + "Metadata")?
+				.Element(ns + "Identity")?
+				.Attribute("Version")?
+				.Value;
+
+			return !string.IsNullOrEmpty(version)
+				? $"{EXTENSION_NAME} v{version}"
+				: EXTENSION_NAME;
+		}
+		catch
+		{
+			return EXTENSION_NAME;
+		}
 	}
 
 	#endregion Methods
