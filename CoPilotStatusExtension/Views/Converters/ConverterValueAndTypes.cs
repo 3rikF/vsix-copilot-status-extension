@@ -103,7 +103,8 @@ public sealed class CopilotPlanToTextConverter : IValueConverter
 			return plan switch
 			{
 				"individual"			=> "Individual",
-				"enterprise"			=> "Organization",
+				"business"				=> "Organization",
+				"enterprise"			=> "Enterprise",
 				_						=> $"Unknown [{plan}]"
 			};
 		}
