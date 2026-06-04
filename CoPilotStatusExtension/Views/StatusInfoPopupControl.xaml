@@ -50,7 +50,7 @@
 				>
 
 				<Setter Property="Background"		Value="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"/>
-				<Setter Property="d:BorderBrush"	Value="magenta"/>
+				<!--<Setter Property="d:BorderBrush"	Value="magenta"/>-->
 				<!--<Setter Property="BorderBrush"		Value="{DynamicResource {x:Static platformUI:EnvironmentColors.SystemInactiveBorderBrushKey}}"/>-->
 				<Setter Property="BorderThickness"	Value="1"/>
 
@@ -104,16 +104,14 @@
 		BorderThickness	="1"
 		MinWidth		="300"
 		>
-		<platformUI:GroupStackPanel
+		<StackPanel
 			Margin ="{StaticResource SmallMarginBR}"
 			>
 
 			<!-- ==== Header Lookalike ============================================================================ -->
-			<!--Background		="{DynamicResource MouseOverBackground}"-->
 			<DockPanel
-				Margin	="{StaticResource SmallMarginTL}"
+				Margin ="{StaticResource SmallMarginTL}"
 				>
-
 				<Grid
 					Margin	="{StaticResource SmallMarginT}"
 					DockPanel.Dock	="Bottom"
@@ -165,6 +163,12 @@
 
 			</DockPanel>
 
+			<!--<platformUI:FeedbackPanel />-->
+			<!--<platformUI:MarchingAntsProgressBar />-->
+			<!--<platformUI:SystemDropShadowChrome>
+				<TextBox Text="seserewr"/>
+			</platformUI:SystemDropShadowChrome>-->
+
 			<!-- ================================================================================================== -->
 			<StackPanel
 				Margin		="{StaticResource SmallMarginTL}"
@@ -208,7 +212,7 @@
 							Grid.Column	="0"
 							Grid.Row	="0"
 							Margin		="{StaticResource NormalLowMarginTL}"
-							Text		="🧑🏻‍💼 Copilot Plan:"/>
+							Text		="Copilot Plan:"/>
 						<TextBlock
 							Grid.Column	="1"
 							Grid.Row	="0"
@@ -221,7 +225,7 @@
 							Grid.Column	="0"
 							Grid.Row	="1"
 							Margin		="{StaticResource NormalLowMarginTL}"
-							Text		="📦 Access Type SKU:"/>
+							Text		="Access Type SKU:"/>
 						<TextBlock
 							Grid.Column	="1"
 							Grid.Row	="1"
@@ -234,7 +238,7 @@
 							Grid.Column	="0"
 							Grid.Row	="2"
 							Margin		="{StaticResource NormalLowMarginTL}"
-							Text		="📆 Assigned Date:"/>
+							Text		="Assigned Date:"/>
 						<TextBlock
 							Grid.Column	="1"
 							Grid.Row	="2"
@@ -247,7 +251,7 @@
 							Grid.Column	="0"
 							Grid.Row	="3"
 							Margin		="{StaticResource NormalLowMarginTL}"
-							Text		="🚫 Restricted Telemetry:"/>
+							Text		="Restricted Telemetry:"/>
 						<TextBlock
 							Grid.Column	="1"
 							Grid.Row	="3"
@@ -260,9 +264,7 @@
 			</Border>
 
 			<!-- ================================================================================================== -->
-			<Border
-				Style			="{StaticResource InformationGroupBorderStyle}"
-				>
+			<Border Style ="{StaticResource InformationGroupBorderStyle}">
 
 				<Expander
 					Margin		="{StaticResource SmallMarginTL}"
@@ -296,7 +298,7 @@
 							Grid.Column	="0"
 							Grid.Row	="0"
 							Margin		="{StaticResource NormalLowMarginTL}"
-							Text		="💬 Chat"/>
+							Text		="Chat"/>
 						<CheckBox
 							Grid.Column	="1"
 							Grid.Row	="0"
@@ -308,7 +310,7 @@
 							Grid.Column	="0"
 							Grid.Row	="1"
 							Margin		="{StaticResource NormalLowMarginTL}"
-							Text		="🗔 CLI"/>
+							Text		="CLI"/>
 						<CheckBox
 							Grid.Column	="1"
 							Grid.Row	="1"
@@ -320,7 +322,7 @@
 							Grid.Column	="0"
 							Grid.Row	="2"
 							Margin		="{StaticResource NormalLowMarginTL}"
-							Text		="📡 CLI Remote Control"/>
+							Text		="CLI Remote Control"/>
 						<CheckBox
 							Grid.Column	="1"
 							Grid.Row	="2"
@@ -332,7 +334,7 @@
 							Grid.Column	="0"
 							Grid.Row	="3"
 							Margin		="{StaticResource NormalLowMarginTL}"
-							Text		="🔌 MCP"/>
+							Text		="MCP"/>
 						<CheckBox
 							Grid.Column	="1"
 							Grid.Row	="3"
@@ -345,7 +347,7 @@
 							Grid.Column	="0"
 							Grid.Row	="4"
 							Margin		="{StaticResource NormalLowMarginTL}"
-							Text		="🔬 Preview Features"/>
+							Text		="Preview Features"/>
 						<CheckBox
 							Grid.Column	="1"
 							Grid.Row	="4"
@@ -357,7 +359,7 @@
 							Grid.Column	="0"
 							Grid.Row	="5"
 							Margin		="{StaticResource NormalLowMarginTL}"
-							Text		="🙈 Copilot Ignore"/>
+							Text		="Copilot Ignore"/>
 						<CheckBox
 							Grid.Column	="1"
 							Grid.Row	="5"
@@ -369,7 +371,7 @@
 							Grid.Column	="0"
 							Grid.Row	="6"
 							Margin		="{StaticResource NormalLowMarginTL}"
-							Text		="☁️ Cloud Session Storage"/>
+							Text		="Cloud Session Storage"/>
 						<CheckBox
 							Grid.Column	="1"
 							Grid.Row	="6"
@@ -405,157 +407,90 @@
 				</Expander>
 			</Border>
 
-			<!-- ================================================================================================== -->
-			<!--<Separator
-				Margin				="{StaticResource SmallMarginTL}"
-				VerticalAlignment	="Center"
-				HorizontalAlignment	="Stretch"
-				Height				="1"
-				BorderBrush			="{DynamicResource {x:Static vsshell:VsBrushes.PanelSubGroupSeparatorKey}}"
-				BorderThickness		="0.5"
-				d:BorderBrush		="black"
-				/>-->
-
 			<!-- ==== Quote List ================================================================================== -->
-			<Border
-				Style ="{StaticResource InformationGroupBorderStyle}"
-				>
+			<Border Style ="{StaticResource InformationGroupBorderStyle}">
 
-				<ItemsControl
-					Margin			="{StaticResource NormalMarginTL}"
-					ItemsSource		="{Binding QuotaDetails}"
-					d:ItemsSource	="{d:SampleData ItemCount=3}"
-
-					Background				="Transparent"
-					BorderBrush				="Transparent"
-					BorderThickness			="0"
+				<Expander
+					Margin		="{StaticResource SmallMarginTL}"
+					Header		="Quota"
+					IsExpanded	="True"
 					>
 
-					<ItemsControl.ItemTemplate>
-						<DataTemplate>
-							<Grid
-								Margin="{StaticResource TinyMarginBR}">
 
-								<UniformGrid
-									Columns			="2"
-									Visibility		="{Binding Unlimited, Converter={StaticResource BoolToVisibility}}"
-									d:Visibility	="Collapsed"
-									>
+					<ItemsControl
+						Margin			="{StaticResource NormalMarginTL}"
+						ItemsSource		="{Binding QuotaDetails}"
+						d:ItemsSource	="{d:SampleData ItemCount=3}"
 
-									<TextBlock
-										Margin		="{StaticResource TinyMarginTL}"
-										FontWeight	="Bold"
-										Text		="{Binding QuotaId, StringFormat='{}{0}:'}"
-										/>
+						Background				="Transparent"
+						BorderBrush				="Transparent"
+						BorderThickness			="0"
+						>
 
-
-									<TextBlock
-										Margin				="{StaticResource TinyMarginTL}"
-										Text				="♾️ Unlimited"
-										HorizontalAlignment	="Right"
-										/>
-
-								</UniformGrid>
-
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
 								<Grid
-									Visibility		="{Binding Unlimited, Converter={StaticResource BoolToVisibility}, ConverterParameter=!}"
-									d:Visibility	="Visible"
-									>
+									Margin="{StaticResource TinyMarginBR}">
 
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="1*"/>
-										<ColumnDefinition Width="2*" />
-									</Grid.ColumnDefinitions>
-
-									<Grid.RowDefinitions>
-										<RowDefinition Height="Auto" />
-										<RowDefinition Height="Auto" />
-										<RowDefinition Height="Auto" />
-										<RowDefinition Height="Auto" />
-										<RowDefinition Height="Auto" />
-										<RowDefinition Height="Auto" />
-										<RowDefinition Height="Auto" />
-										<RowDefinition Height="Auto" />
-									</Grid.RowDefinitions>
-
-									<!-- ==== Line 1 ==== -->
-									<TextBlock
-										Grid.Row	="0"
-										Grid.Column	="0"
-										Grid.ColumnSpan	="2"
-										Margin		="{StaticResource TinyMarginTL}"
-										FontWeight	="Bold"
-										Text		="{Binding QuotaId, StringFormat='{}{0}:'}"
-										d:Text		="Quota Category"
-										/>
-
-									<!-- ==== Line 2 ==== -->
-									<TextBlock
-										Grid.Row	="1"
-										Grid.Column	="0"
-										Margin		="{StaticResource NormalLowMarginTL}"
-										Text		="💰 AI-Credits:"
-										/>
-
-									<StackPanel
-										Grid.Row	="1"
-										Grid.Column	="1"
-										Orientation	="Horizontal"
-										Margin		="{StaticResource TinyMarginTL}"
+									<!--Visibility		="{Binding Unlimited, Converter={StaticResource BoolToVisibility}}"-->
+									<Grid
+										d:Visibility	="Collapsed"
 										>
-										<TextBlock Text ="{Binding Remaining}" />
-										<TextBlock Text =" of " />
-										<TextBlock Text ="{Binding Entitlement}" />
-										<TextBlock Text =" used" />
-									</StackPanel>
 
-									<!-- ==== Line 3 ==== -->
-									<TextBlock
-										Grid.Row	="2"
-										Grid.Column	="0"
-										Margin		="{StaticResource NormalLowMarginTL}"
-										Text		="⚠️ Overage:"
-										/>
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="auto"/>
+											<ColumnDefinition Width="*"/>
+										</Grid.ColumnDefinitions>
 
-									<TextBlock
-										Grid.Row	="2"
-										Grid.Column	="1"
-										Visibility	="{Binding OveragePermitted, Converter={StaticResource BoolToVisibility}, ConverterParameter=!}"
-										Margin		="{StaticResource TinyMarginTL}"
-										Text		="[Not Permitted]"
-										/>
 
-									<TextBlock
-										Grid.Row	="2"
-										Grid.Column	="1"
-										Visibility	="{Binding OveragePermitted, Converter={StaticResource BoolToVisibility}}"
-										Margin		="{StaticResource TinyMarginTL}"
-										Text		="{Binding OverageCount, StringFormat='{}{0} extra AIC used'}"
-										/>
+										<TextBlock
+											Grid.Column			="0"
+											Margin				="{StaticResource TinyMarginTL}"
+											FontWeight			="Bold"
+											Text				="{Binding QuotaId, StringFormat='{}{0}:'}"
+											/>
 
-									<!-- ==== Line 4 ==== -->
-									<!--<TextBlock
-										Grid.Row	="3"
-										Grid.Column	="0"
-										Margin		="{StaticResource TinyMarginTL}"
-										Text		="Reset At:"
-										/>
+										<TextBlock
+											Grid.Column			="1"
+											Visibility			="{Binding Unlimited, Converter={StaticResource BoolToVisibility}}"
+											Margin				="{StaticResource TinyMarginTL}"
+											Text				="♾️ Unlimited"
+											HorizontalAlignment	="Right"
+											/>
 
-									<TextBlock
-										Grid.Row	="3"
-										Grid.Column	="1"
-										Margin		="{StaticResource TinyMarginTL}"
-										Text		="{Binding TimestampUtc, Converter={StaticResource UtcToLocal}, StringFormat='{}{0:g}'}"
-										/>-->
+										<StackPanel
+											Grid.Row			="1"
+											Grid.Column			="1"
+											Visibility			="{Binding Unlimited, Converter={StaticResource BoolToVisibility}, ConverterParameter=!}"
+											HorizontalAlignment	="Right"
+											>
+											<StackPanel
+												Orientation			="Horizontal"
+												Margin				="{StaticResource TinyMarginTL}"
+												>
+												<TextBlock Text ="{Binding QuotaRemaining}" />
+												<TextBlock Text =" of " />
+												<TextBlock Text ="{Binding Entitlement}" />
+												<TextBlock Text =" used" />
+											</StackPanel>
 
+											<TextBlock
+												Visibility	="{Binding OveragePermitted, Converter={StaticResource BoolToVisibility}}"
+												Grid.Row	="2"
+												Grid.Column	="1"
+												HorizontalAlignment="Right"
+												Text		="{Binding OverageCount, StringFormat='{}+{0} extra'}"
+												/>
+										</StackPanel>
+									</Grid>
 								</Grid>
-							</Grid>
-						</DataTemplate>
+							</DataTemplate>
 
-					</ItemsControl.ItemTemplate>
-				</ItemsControl>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</Expander>
 			</Border>
 
-		</platformUI:GroupStackPanel>
+		</StackPanel>
 	</Border>
 </UserControl>
