@@ -40,10 +40,8 @@
 	-->
 	<!--<conv:UnixMillisecondsToDateTimeConverter	x:Key="UnixMillisecondsToDateTime" />-->
 	<conv:UtcToLocalConverter					x:Key="UtcToLocal" />
-	<conv:StatusToTextConverter					x:Key="StatusToText" />
-	<conv:SubscriptionToTextConverter			x:Key="SubscriptionToText" />
-	<conv:CopilotPlanToTextConverter			x:Key="CopilotPlanToText" />
 	<conv:BoolToTextConverter					x:Key="BoolToText" />
+	<conv:SimpleTranslationConverter			x:Key="SimpleTranslation" />
 
 
 </ResourceDictionary>

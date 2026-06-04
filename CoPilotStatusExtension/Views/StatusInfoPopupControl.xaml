@@ -217,7 +217,7 @@
 							Grid.Column	="1"
 							Grid.Row	="0"
 							Margin		="{StaticResource NormalLowMarginTL}"
-							Text		="{Binding PersonalInfo.CopilotPlan, Converter={StaticResource CopilotPlanToText}}"
+							Text		="{Binding PersonalInfo.CopilotPlan, Converter={StaticResource SimpleTranslation}}"
 							HorizontalAlignment="Right"/>
 
 						<!-- ==== Line 2 ==== -->
@@ -230,7 +230,7 @@
 							Grid.Column	="1"
 							Grid.Row	="1"
 							Margin		="{StaticResource NormalLowMarginTL}"
-							Text		="{Binding PersonalInfo.AccessTypeSku, Converter={StaticResource SubscriptionToText}}"
+							Text		="{Binding PersonalInfo.AccessTypeSku, Converter={StaticResource SimpleTranslation}}"
 							HorizontalAlignment="Right"/>
 
 						<!-- ==== Line 3 ==== -->
@@ -447,7 +447,7 @@
 											Grid.Column			="0"
 											Margin				="{StaticResource TinyMarginTL}"
 											FontWeight			="Bold"
-											Text				="{Binding QuotaId, StringFormat='{}{0}:'}"
+											Text				="{Binding QuotaId, Converter={StaticResource SimpleTranslation}, StringFormat='{}{0}:'}"
 											/>
 
 										<TextBlock
