@@ -50,11 +50,11 @@
 				>
 
 				<Setter Property="Background"		Value="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"/>
-				<Setter Property="BorderBrush"		Value="Transparent"/>
+				<Setter Property="d:BorderBrush"	Value="magenta"/>
 				<!--<Setter Property="BorderBrush"		Value="{DynamicResource {x:Static platformUI:EnvironmentColors.SystemInactiveBorderBrushKey}}"/>-->
 				<Setter Property="BorderThickness"	Value="1"/>
 
-				<Setter Property="CornerRadius"		Value="5"/>
+				<Setter Property="CornerRadius"		Value="15"/>
 				<Setter Property="Margin"			Value="{StaticResource SmallMarginTL}"/>
 				<Setter Property="Padding"			Value="{StaticResource SmallMarginBR}"/>
 
@@ -172,10 +172,11 @@
 				>
 
 				<!-- ==== Line 17 ==== -->
-				<TextBlock Text="🕒 Limits will be reset on "/>
+				<TextBlock Text="Limits will be reset on "/>
 				<TextBlock Text="{Binding PersonalInfo.QuotaResetDateUtc, Converter={StaticResource UtcToLocal}, StringFormat=g}"/>
 			</StackPanel>
 
+			<!-- ================================================================================================== -->
 			<Border
 				Style			="{StaticResource InformationGroupBorderStyle}"
 				>
@@ -258,9 +259,11 @@
 				</Expander>
 			</Border>
 
+			<!-- ================================================================================================== -->
 			<Border
 				Style			="{StaticResource InformationGroupBorderStyle}"
 				>
+
 				<Expander
 					Margin		="{StaticResource SmallMarginTL}"
 					Header		="CoPilot Features"
@@ -402,31 +405,6 @@
 				</Expander>
 			</Border>
 
-
-			<UniformGrid
-				Margin	="{StaticResource NormalLowMarginTL}"
-				Columns	="2">
-
-
-
-				<!-- ==== Line 12 ==== -->
-
-				<!-- ==== Line 15 ==== -->
-				<!--<TextBlock
-					Text="Can Upgrade Plan:"/>
-
-				<TextBlock
-					Text="{Binding PersonalInfo.CanUpgradePlan, Converter={StaticResource BoolToText}}"/>-->
-
-				<!-- ==== Line 16 ==== -->
-				<!--
-				<TextBlock Text="Quota Reset Date:"/>
-				<TextBlock Text="{Binding PersonalInfo.QuotaResetDate}"/>
-				-->
-
-
-			</UniformGrid>
-
 			<!-- ================================================================================================== -->
 			<!--<Separator
 				Margin				="{StaticResource SmallMarginTL}"
@@ -444,7 +422,7 @@
 				>
 
 				<ItemsControl
-					Margin			="{StaticResource SmallMarginTL}"
+					Margin			="{StaticResource NormalMarginTL}"
 					ItemsSource		="{Binding QuotaDetails}"
 					d:ItemsSource	="{d:SampleData ItemCount=3}"
 

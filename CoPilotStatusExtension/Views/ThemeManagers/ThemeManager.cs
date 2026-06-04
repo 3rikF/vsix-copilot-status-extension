@@ -5,7 +5,7 @@ using System.Windows.Media;
 using Microsoft.VisualStudio.PlatformUI;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-namespace CoPilotStatusExtension.Views;
+namespace CoPilotStatusExtension.Views.ThemeManagers;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 /// <summary>

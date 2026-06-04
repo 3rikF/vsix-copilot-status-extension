@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using CoPilotStatusExtension.GitHubApiModels;
 using CoPilotStatusExtension.Models;
 using CoPilotStatusExtension.ViewModels;
+using CoPilotStatusExtension.Views.ThemeManagers;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 namespace CoPilotStatusExtension.Views;
@@ -53,5 +54,5 @@ public partial class GitHubStatusBarControl : UserControl
 	{
 		ctrlStatusPopup.IsOpen = true;
 		e.Handled = true;
-    }
+	}
 }

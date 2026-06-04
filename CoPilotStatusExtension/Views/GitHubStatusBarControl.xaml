@@ -17,7 +17,7 @@
 	d:Background		="Gray"
 	d:Foreground		="white"
 	d:DataContext		="{d:DesignInstance Type=localVM:GitHubStatusBarViewModel}"
-	MouseLeftButtonUp ="ctrlBarItem_MouseLeftButtonUp"
+	MouseLeftButtonUp	="ctrlBarItem_MouseLeftButtonUp"
 	>
 
 	<!-- ==== Resources =============================================================================================================== -->
@@ -53,7 +53,7 @@
 
 			StaysOpen			="False"
 			AllowsTransparency	="True"
-			d:PopupAnimation	="Fade"
+			PopupAnimation		="Fade"
 			>
 
 			<local:StatusInfoPopupControl
