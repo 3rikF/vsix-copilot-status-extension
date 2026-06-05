@@ -3,58 +3,47 @@ name: Build and Release VSIX
 on:
   push:
     tags:
-      - 'v*'  # Triggert bei Tags wie v1.0.0, v1.2.3, etc.
+      - 'v*' # triggers on tags like v1.0.0, v1.2.3, etc.
 
 jobs:
   build-and-release:
     runs-on: windows-latest
+    permissions:
+      contents: write
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v2
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
 
-    - name: Setup NuGet
-      uses: nuget/setup-nuget@v2
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v3
 
-    - name: Restore NuGet packages
-      run: nuget restore CoPilotStatusExtension.slnx
+      - name: Restore NuGet Packages
+        run: nuget restore CoPilotStatusExtension.slnx
 
-    - name: Build Solution (Release)
-      run: msbuild CoPilotStatusExtension.slnx /p:Configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
+      - name: Build VSIX
+        run: msbuild CoPilotStatusExtension.slnx /p:Configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal
 
-    - name: Find VSIX file
-      id: find_vsix
-      shell: pwsh
-      run: |
-        $vsixFile = Get-ChildItem -Path . -Filter *.vsix -Recurse | Select-Object -First 1
-        echo "vsix_path=$($vsixFile.FullName)" >> $env:GITHUB_OUTPUT
-        echo "vsix_name=$($vsixFile.Name)" >> $env:GITHUB_OUTPUT
+      - name: Locate VSIX File
+        id: find_vsix
+        shell: powershell
+        run: |
+          # Recursively finds the generated .vsix file in the Release build output
+          $vsixPath = Get-ChildItem -Path .\CoPilotStatusExtension\bin\Release -Filter *.vsix -Recurse | Select-Object -First 1 -ExpandProperty FullName
 
-    - name: Create Release and Upload VSIX
-      uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
-      with:
-        files: ${{ steps.find_vsix.outputs.vsix_path }}
-        tag_name: ${{ github.ref_name }}
-        name: CoPilot Status Extension ${{ github.ref_name }}
-        body: |
-          ## Visual Studio Extension - CoPilot Status Extension
+          if (-not $vsixPath) {
+              Write-Error "VSIX file not found!"
+              exit 1
+          }
 
-          ### Installation
-          1. Download the `.vsix` file below
-          2. Double-click to install
-          3. Restart Visual Studio
+          echo "Found VSIX at: $vsixPath"
+          echo "VSIX_PATH=$vsixPath" >> $env:GITHUB_ENV
 
-          ### Requirements
-          - Visual Studio 2022 (17.5) or later
-          - .NET Framework 4.7.2 or later
-          - GitHub Copilot subscription
-
-          **Full Changelog**: https://github.com/${{ github.repository }}/commits/${{ github.ref_name }}
-        draft: false
-        prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release and Upload Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.VSIX_PATH }}
+          generate_release_notes: true
