@@ -55,4 +55,12 @@
   <ItemGroup>
     <Folder Include="Views\Resources\Images\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="../LICENSE.txt">
+      <Link>Repository Files\LICENSE.txt</Link>
+    </None>
+    <None Include="../README.md">
+      <Link>Repository Files\README.md</Link>
+    </None>
+  </ItemGroup>
 </Project>
