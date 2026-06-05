@@ -3,7 +3,7 @@ name: Build and Release VSIX
 on:
   push:
     tags:
-      - 'v*.*.*'  # Triggert bei Tags wie v1.0.0, v1.2.3, etc.
+      - 'v*'  # Triggert bei Tags wie v1.0.0, v1.2.3, etc.
 
 jobs:
   build-and-release:
