@@ -39,10 +39,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Community.VisualStudio.Toolkit.17" Version="17.0.551" />
     <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.14.40265" ExcludeAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.Shell.Framework" Version="17.14.40264" />
     <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="18.5.40034" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" ExcludeAssets="runtime" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" ExcludeAssets="runtime" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Views\GitHubStatusBarControl.xaml">

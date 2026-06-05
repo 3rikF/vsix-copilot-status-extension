@@ -32,11 +32,12 @@
 			<sys:Double x:Key="BackgroundProgressOpacity">0.5</sys:Double>
 			<sys:Double x:Key="HeaderFontSize">20</sys:Double>
 
-			<!-- ================================================================================================== -->
+			<!-- ==== Style: Expander ============================================================================= -->
 			<Style TargetType="Expander" BasedOn="{StaticResource {x:Type Expander}}">
 				<Setter Property="Foreground" Value="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarTextActiveKey}}" />
 			</Style>
 
+			<!-- ==== Style: Check-Box ============================================================================ -->
 			<Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
 				<Setter Property="IsHitTestVisible"		Value="False" />
 				<Setter Property="Focusable"			Value="False" />
@@ -44,7 +45,7 @@
 				<Setter Property="VerticalAlignment"	Value="Center" />
 			</Style>
 
-			<!-- ==== information Group Border Style ============================================================== -->
+			<!-- ==== Style: Information Group Border ============================================================= -->
 			<Style
 				x:Key		="InformationGroupBorderStyle"
 				TargetType	="Border"
@@ -94,7 +95,7 @@
 				</Style.Triggers>
 			</Style>
 
-			<!-- ==== Link Button Style =========================================================================== -->
+			<!-- ==== Style: Link Button ========================================================================== -->
 			<Style x:Key="LinkButton"
 				TargetType="Button"
 				BasedOn="{StaticResource ResourceKey={x:Type Button}}"
@@ -130,6 +131,18 @@
 				</Style.Triggers>
 			</Style>
 
+			<!-- ==== Style: Right Aligned Text =================================================================== -->
+			<Style
+				x:Key		="RightAlignedTextBlockStyle"
+				TargetType	="TextBlock"
+				BasedOn		="{StaticResource {x:Type TextBlock}}"
+				>
+				<Setter Property="HorizontalAlignment"	Value="Right"/>
+				<Setter Property="FontWeight"			Value="Bold"/>
+				<Setter Property="Margin"				Value="{StaticResource NormalLowMarginTL}"/>
+			</Style>
+
+
 		</ResourceDictionary>
 	</UserControl.Resources>
 
@@ -160,15 +173,15 @@
 						d:BorderBrush		="black"
 						BorderThickness		="0.5"
 						/>
-					<ProgressBar
-						x:Name="Test"
-						Style				="{StaticResource UsageProgressBarStyle}"
-						Background			="Transparent"
-						BorderBrush			="Transparent"
-						Foreground			="{DynamicResource {x:Static platformUI:EnvironmentColors.MainWindowActiveIconDefaultBrushKey}}"
-						Value				="{Binding PremiumInteractionsUsedPercent, Mode=OneWay}"
-						d:Value				="{StaticResource PreviewProgress}"
-						/>
+						<ProgressBar
+							x:Name="Test"
+							Style				="{StaticResource UsageProgressBarStyle}"
+							Background			="Transparent"
+							BorderBrush			="Transparent"
+							Foreground			="{DynamicResource {x:Static platformUI:EnvironmentColors.MainWindowActiveIconDefaultBrushKey}}"
+							Value				="{Binding PremiumInteractionsUsedPercent, Mode=OneWay}"
+							d:Value				="{StaticResource PreviewProgress}"
+							/>
 				</Grid>
 
 				<!--Background		="{DynamicResource MouseOverBackground}"-->
@@ -253,8 +266,9 @@
 				<Expander
 					Margin		="{StaticResource SmallMarginTL}"
 					Header		="Extended Information"
-					IsExpanded	="False"
 					Foreground	="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarTextActiveKey}}"
+					IsExpanded	="False"
+					d:IsExpanded="True"
 					>
 
 					<Grid
@@ -282,9 +296,10 @@
 						<TextBlock
 							Grid.Column	="1"
 							Grid.Row	="0"
-							Margin		="{StaticResource NormalLowMarginTL}"
+							Style		="{StaticResource RightAlignedTextBlockStyle}"
 							Text		="{Binding PersonalInfo.CopilotPlan, Converter={StaticResource SimpleTranslation}}"
-							HorizontalAlignment="Right"/>
+							d:Text		="Individual"
+							/>
 
 						<!-- ==== Line 2 ==== -->
 						<TextBlock
@@ -295,9 +310,10 @@
 						<TextBlock
 							Grid.Column	="1"
 							Grid.Row	="1"
-							Margin		="{StaticResource NormalLowMarginTL}"
+							Style		="{StaticResource RightAlignedTextBlockStyle}"
 							Text		="{Binding PersonalInfo.AccessTypeSku, Converter={StaticResource SimpleTranslation}}"
-							HorizontalAlignment="Right"/>
+							d:Text		="Yearly Subscriber"
+							/>
 
 						<!-- ==== Line 3 ==== -->
 						<TextBlock
@@ -308,9 +324,10 @@
 						<TextBlock
 							Grid.Column	="1"
 							Grid.Row	="2"
-							Margin		="{StaticResource NormalLowMarginTL}"
+							Style		="{StaticResource RightAlignedTextBlockStyle}"
 							Text		="{Binding PersonalInfo.AssignedDate, Converter={StaticResource UtcToLocal}, StringFormat=g}"
-							HorizontalAlignment="Right"/>
+							d:Text		="01/01/2024 12:00 PM"
+							/>
 
 						<!-- ==== Line 4 ==== -->
 						<TextBlock
@@ -321,9 +338,10 @@
 						<TextBlock
 							Grid.Column	="1"
 							Grid.Row	="3"
-							Margin		="{StaticResource NormalLowMarginTL}"
-							Text		="{Binding PersonalInfo.RestrictedTelemetry, Converter={StaticResource BoolToText},ConverterParameter='restricted;unrestricted'}"
-							HorizontalAlignment="Right"/>
+							Style		="{StaticResource RightAlignedTextBlockStyle}"
+							Text		="{Binding PersonalInfo.RestrictedTelemetry, Converter={StaticResource BoolToText},ConverterParameter='Restricted;Unrestricted'}"
+							d:Text		="restricted"
+							/>
 
 					</Grid>
 				</Expander>
@@ -336,6 +354,7 @@
 					Margin		="{StaticResource SmallMarginTL}"
 					Header		="CoPilot Features"
 					IsExpanded	="False"
+					d:IsExpanded="True"
 					>
 
 					<Grid
@@ -361,48 +380,48 @@
 
 						<!-- ==== Line 1 ==== -->
 						<TextBlock
-							Grid.Column	="0"
+							Grid.Column	="1"
 							Grid.Row	="0"
 							Margin		="{StaticResource NormalLowMarginTL}"
 							Text		="Chat"/>
 						<CheckBox
-							Grid.Column	="1"
+							Grid.Column	="0"
 							Grid.Row	="0"
 							Margin		="{StaticResource NormalLowMarginTL}"
 							IsChecked	="{Binding PersonalInfo.ChatEnabled}" />
 
 						<!-- ==== Line 2 ==== -->
 						<TextBlock
-							Grid.Column	="0"
+							Grid.Column	="1"
 							Grid.Row	="1"
 							Margin		="{StaticResource NormalLowMarginTL}"
 							Text		="CLI"/>
 						<CheckBox
-							Grid.Column	="1"
+							Grid.Column	="0"
 							Grid.Row	="1"
 							Margin		="{StaticResource NormalLowMarginTL}"
 							IsChecked	="{Binding PersonalInfo.CliEnabled}" />
 
 						<!-- ==== Line 7 ==== -->
 						<TextBlock
-							Grid.Column	="0"
+							Grid.Column	="1"
 							Grid.Row	="2"
 							Margin		="{StaticResource NormalLowMarginTL}"
 							Text		="CLI Remote Control"/>
 						<CheckBox
-							Grid.Column	="1"
+							Grid.Column	="0"
 							Grid.Row	="2"
 							Margin		="{StaticResource NormalLowMarginTL}"
 							IsChecked	="{Binding PersonalInfo.CliRemoteControlEnabled}" />
 
 						<!-- ==== Line 3 ==== -->
 						<TextBlock
-							Grid.Column	="0"
+							Grid.Column	="1"
 							Grid.Row	="3"
 							Margin		="{StaticResource NormalLowMarginTL}"
 							Text		="MCP"/>
 						<CheckBox
-							Grid.Column	="1"
+							Grid.Column	="0"
 							Grid.Row	="3"
 							Margin		="{StaticResource NormalLowMarginTL}"
 							IsChecked	="{Binding PersonalInfo.IsMcpEnabled}"
@@ -410,36 +429,36 @@
 
 						<!-- ==== Line 5 ==== -->
 						<TextBlock
-							Grid.Column	="0"
+							Grid.Column	="1"
 							Grid.Row	="4"
 							Margin		="{StaticResource NormalLowMarginTL}"
 							Text		="Preview Features"/>
 						<CheckBox
-							Grid.Column	="1"
+							Grid.Column	="0"
 							Grid.Row	="4"
 							Margin		="{StaticResource NormalLowMarginTL}"
 							IsChecked	="{Binding PersonalInfo.EditorPreviewFeaturesEnabled}" />
 
 						<!-- ==== Line 4==== -->
 						<TextBlock
-							Grid.Column	="0"
+							Grid.Column	="1"
 							Grid.Row	="5"
 							Margin		="{StaticResource NormalLowMarginTL}"
 							Text		="Copilot Ignore"/>
 						<CheckBox
-							Grid.Column	="1"
+							Grid.Column	="0"
 							Grid.Row	="5"
 							Margin		="{StaticResource NormalLowMarginTL}"
 							IsChecked	="{Binding PersonalInfo.CopilotIgnoreEnabled}" />
 
 						<!-- ==== Line 6 ==== -->
 						<TextBlock
-							Grid.Column	="0"
+							Grid.Column	="1"
 							Grid.Row	="6"
 							Margin		="{StaticResource NormalLowMarginTL}"
 							Text		="Cloud Session Storage"/>
 						<CheckBox
-							Grid.Column	="1"
+							Grid.Column	="0"
 							Grid.Row	="6"
 							Margin		="{StaticResource NormalLowMarginTL}"
 							IsChecked	="{Binding PersonalInfo.CloudSessionStorageEnabled}" />
@@ -480,8 +499,8 @@
 					Margin		="{StaticResource SmallMarginTL}"
 					Header		="Quota"
 					IsExpanded	="True"
+					d:IsExpanded="True"
 					>
-
 
 					<ItemsControl
 						Margin			="{StaticResource NormalMarginTL}"
@@ -499,53 +518,56 @@
 									Margin="{StaticResource TinyMarginBR}">
 
 									<!--Visibility		="{Binding Unlimited, Converter={StaticResource BoolToVisibility}}"-->
-									<Grid
-										d:Visibility	="Collapsed"
-										>
+									<Grid>
 
 										<Grid.ColumnDefinitions>
 											<ColumnDefinition Width="auto"/>
 											<ColumnDefinition Width="*"/>
 										</Grid.ColumnDefinitions>
 
-
 										<TextBlock
 											Grid.Column			="0"
 											Margin				="{StaticResource TinyMarginTL}"
-											FontWeight			="Bold"
 											Text				="{Binding QuotaId, Converter={StaticResource SimpleTranslation}, StringFormat='{}{0}:'}"
+											d:Text				="Quota ID Xyz:"
 											/>
 
 										<TextBlock
 											Grid.Column			="1"
-											Visibility			="{Binding Unlimited, Converter={StaticResource BoolToVisibility}}"
 											Margin				="{StaticResource TinyMarginTL}"
-											Text				="♾️ Unlimited"
 											HorizontalAlignment	="Right"
+											Visibility			="{Binding Unlimited, Converter={StaticResource BoolToVisibility}}"
+											d:Visibility		="Collapsed"
+											FontWeight			="Bold"
+											Text				="Unlimited"
 											/>
 
 										<StackPanel
 											Grid.Row			="1"
 											Grid.Column			="1"
 											Visibility			="{Binding Unlimited, Converter={StaticResource BoolToVisibility}, ConverterParameter=!}"
+											d:Visibility		="Visible"
 											HorizontalAlignment	="Right"
 											>
-											<StackPanel
-												Orientation			="Horizontal"
-												Margin				="{StaticResource TinyMarginTL}"
-												>
-												<TextBlock Text ="{Binding QuotaRemaining}" />
-												<TextBlock Text =" of " />
-												<TextBlock Text ="{Binding Entitlement}" />
-												<TextBlock Text =" used" />
-											</StackPanel>
 
 											<TextBlock
-												Visibility	="{Binding OveragePermitted, Converter={StaticResource BoolToVisibility}}"
-												Grid.Row	="2"
-												Grid.Column	="1"
-												HorizontalAlignment="Right"
-												Text		="{Binding OverageCount, StringFormat='{}+{0} extra'}"
+												FontWeight	="Bold"
+												Margin		="{StaticResource TinyMarginTL}"
+												>
+												<Run Text ="{Binding QuotaUsed, Mode=OneWay}" d:Text="1200" />
+												<Run Text ="of" />
+												<Run Text ="{Binding Entitlement, Mode=OneWay}" d:Text="3000"/>
+												<Run Text ="used" />
+											</TextBlock>
+
+											<TextBlock
+												Grid.Row			="2"
+												Grid.Column			="1"
+												HorizontalAlignment	="Right"
+												Visibility			="{Binding OveragePermitted, Converter={StaticResource BoolToVisibility}}"
+												d:Visibility		="Visible"
+												Text				="{Binding OverageCount, StringFormat='{}+{0} extra'}"
+												d:Text				="+10 extra"
 												/>
 										</StackPanel>
 									</Grid>

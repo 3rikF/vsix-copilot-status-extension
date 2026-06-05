@@ -24,6 +24,9 @@ public class QuotaDetail
 	[JsonProperty("quota_remaining")]
 	public double QuotaRemaining { get; set; }
 
+	[JsonIgnore]
+	public double QuotaUsed => Entitlement - QuotaRemaining;
+
 	[JsonProperty("unlimited")]
 	public bool Unlimited { get; set; }
 
