@@ -41,12 +41,18 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 	{
 		get
 		{
-			double? remaining	= _personalQuota?.QuotaSnapshots?.PremiumInteractions?.QuotaRemaining;
-			double? entitled	= _personalQuota?.QuotaSnapshots?.PremiumInteractions?.Entitlement;
+			//double? remaining	= _personalQuota?.QuotaSnapshots?.PremiumInteractions?.QuotaRemaining;
+			//double? entitled	= _personalQuota?.QuotaSnapshots?.PremiumInteractions?.Entitlement;
+			//return remaining is null || entitled is null
+			//		? null
+			//		: Math.Round((double)(1.0d - (remaining / entitled)), 5); // 0.123 => "12,3 %"
 
-			return remaining is null || entitled is null
-					? null
-					: 1 - (remaining / entitled);
+			//--- I once had the case where i used 69,99 of 300 token but the API returned "230,0" remaining
+			//--- This calculated to 23,3% instead of the 23,4 % - but the [PercentRemaining] showed the correct percentage
+			//--- which implies a higher accuracy, so always use this
+			return _personalQuota?.QuotaSnapshots?.PremiumInteractions?.PercentRemaining is double percentRemaining
+				? Math.Round(1.0 - percentRemaining, 5)
+				: null;
 		}
 	}
 

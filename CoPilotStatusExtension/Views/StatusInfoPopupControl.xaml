@@ -225,8 +225,13 @@
 					<Button.Content>
 						<TextBlock
 							HorizontalAlignment	="Right"
-							Text ="{Binding PremiumInteractionsUsedPercent, Mode=OneWay, StringFormat='{}{0:P1}'}"
-							/>
+							Text ="{Binding PremiumInteractionsUsedPercent, Mode=OneWay, StringFormat='{}{0:P1}', TargetNullValue='n/a'}"
+							>
+
+							<TextBlock.ToolTip>
+								<TextBlock Text ="{Binding PremiumInteractionsUsedPercent, Mode=OneWay, StringFormat='{}{0:P3}', TargetNullValue='n/a'}"/>
+							</TextBlock.ToolTip>
+						</TextBlock>
 					</Button.Content>
 				</Button>
 

@@ -76,7 +76,7 @@
 				Padding			="0"
 				Height			="3"
 
-				Value			="{Binding PremiumInteractionsUsedPercent, Mode=OneWay}"
+				Value			="{Binding PremiumInteractionsUsedPercent, Mode=OneWay, TargetNullValue=0}"
 
 				d:Visibility	="Visible"
 				d:Background	="#FFA0A0A0"
