@@ -1,6 +1,7 @@
 # CoPilot Status Extension
 
-> **Copyright Notice**
+> [!IMPORTANT]
+> **Copyright Notice**: 
 > "GitHub Copilot", the Copilot logo, the Copilot Octocat icon and related trademarks are the property of **GitHub, Inc.**
 > This extension is an independent, community-developed project and is **not affiliated with, endorsed by, or sponsored by GitHub, Inc. or Microsoft Corporation**.
 > The use of the name "Copilot" and related terms is solely for the purpose of describing the functionality of this extension (i.e., displaying status information from the GitHub Copilot API) and does not imply any official association.
