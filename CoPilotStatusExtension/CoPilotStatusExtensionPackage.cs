@@ -175,10 +175,11 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 			//--- fetch GitHub API data -----------------------------------------------------------
 
 			//--- Billing -----------------------------------------------------
-			(int billingStatusCode, string billingReasonPhrase, CopilotBillingUsage? billingUsage)
-				= await _gitHubService
-					.FetchUserBillingUsageAsync(copilotInfo.Username, copilotInfo.AccessToken)
-					.ConfigureAwait(false);
+			(int billingStatusCode, string billingReasonPhrase, CopilotBillingUsage? billingUsage) = (400, string.Empty, null);
+			//(int billingStatusCode, string billingReasonPhrase, CopilotBillingUsage? billingUsage)
+			//	= await _gitHubService
+			//		.FetchUserBillingUsageAsync(copilotInfo.Username, copilotInfo.AccessToken)
+			//		.ConfigureAwait(false);
 
 			//--- reset all double percentage values from [0-100] to [0-1] for easier binding in the UI ---
 			if (billingUsage is not null)
