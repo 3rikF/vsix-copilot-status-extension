@@ -8,23 +8,23 @@ on:
 jobs:
   build-and-release:
     runs-on: windows-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-    
+
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
-    
+
     - name: Setup NuGet
       uses: nuget/setup-nuget@v2
-    
+
     - name: Restore NuGet packages
       run: nuget restore CoPilotStatusExtension.slnx
-    
+
     - name: Build Solution (Release)
       run: msbuild CoPilotStatusExtension.slnx /p:Configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
-    
+
     - name: Find VSIX file
       id: find_vsix
       shell: pwsh
@@ -32,38 +32,29 @@ jobs:
         $vsixFile = Get-ChildItem -Path . -Filter *.vsix -Recurse | Select-Object -First 1
         echo "vsix_path=$($vsixFile.FullName)" >> $env:GITHUB_OUTPUT
         echo "vsix_name=$($vsixFile.Name)" >> $env:GITHUB_OUTPUT
-    
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create Release and Upload VSIX
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
       with:
+        files: ${{ steps.find_vsix.outputs.vsix_path }}
         tag_name: ${{ github.ref_name }}
-        release_name: CoPilot Status Extension ${{ github.ref_name }}
+        name: CoPilot Status Extension ${{ github.ref_name }}
         body: |
           ## Visual Studio Extension - CoPilot Status Extension
-          
+
           ### Installation
           1. Download the `.vsix` file below
           2. Double-click to install
           3. Restart Visual Studio
-          
+
           ### Requirements
           - Visual Studio 2022 (17.5) or later
           - .NET Framework 4.7.2 or later
           - GitHub Copilot subscription
-          
+
           **Full Changelog**: https://github.com/${{ github.repository }}/commits/${{ github.ref_name }}
         draft: false
         prerelease: false
-    
-    - name: Upload VSIX to Release
-      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ steps.find_vsix.outputs.vsix_path }}
-        asset_name: ${{ steps.find_vsix.outputs.vsix_name }}
-        asset_content_type: application/octet-stream

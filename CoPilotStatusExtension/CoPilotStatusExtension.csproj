@@ -62,5 +62,8 @@
     <None Include="../README.md">
       <Link>Repository Files\README.md</Link>
     </None>
+    <None Include="../.github/workflows/release.yml">
+      <Link>Repository Files\release.yml</Link>
+    </None>
   </ItemGroup>
 </Project>
