@@ -86,13 +86,13 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 		}
 	}
 
-	public CopilotUserInfo AccountInfo
+	public CopilotUserInfo? AccountInfo
 		=> _basicCopilotUserInfo;
 
 	public CopilotQuotaResponse? PersonalInfo
 		=> _personalQuota;
 
-	public RateLimitInfo ApiRateLimitInfo
+	public RateLimitInfo? ApiRateLimitInfo
 		=> _apiRateLimit;
 
 	public string? UserProfileUrl

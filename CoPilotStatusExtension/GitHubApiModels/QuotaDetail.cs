@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace CoPilotStatusExtension.GitHubApiModels;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-public class QuotaDetail
+public sealed class QuotaDetail
 {
 	[JsonProperty("overage_count")]
 	public int OverageCount { get; set; }
@@ -19,7 +19,7 @@ public class QuotaDetail
 	public double PercentRemaining { get; set; }
 
 	[JsonProperty("quota_id")]
-	public string QuotaId { get; set; }
+	public string QuotaId { get; set; } = string.Empty;
 
 	[JsonProperty("quota_remaining")]
 	public double QuotaRemaining { get; set; }

@@ -196,7 +196,7 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 				.ConfigureAwait(false);
 
 			//--- reset all double percentage values from [0-100] to [0-1] for easier binding in the UI ---
-			if (personalQuota is not null)
+			if (personalQuota?.QuotaSnapshots is not null)
 			{
 				personalQuota.QuotaSnapshots.Chat.PercentRemaining					/= 100;
 				personalQuota.QuotaSnapshots.Completions.PercentRemaining			/= 100;

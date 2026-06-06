@@ -13,7 +13,7 @@ public sealed class CopilotQuotaResponse
 	/// The GitHib user-name
 	/// </summary>
 	[JsonProperty("login")]
-	public string Login { get; set; }
+	public string Login { get; set; } = string.Empty;
 
 	/// <summary>
 	/// Examples
@@ -21,10 +21,10 @@ public sealed class CopilotQuotaResponse
 	///		copilot_for_business_seat_quota
 	/// </summary>
 	[JsonProperty("access_type_sku")]
-	public string AccessTypeSku { get; set; }
+	public string AccessTypeSku { get; set; } = string.Empty;
 
 	[JsonProperty("analytics_tracking_id")]
-	public string AnalyticsTrackingId { get; set; }
+	public string AnalyticsTrackingId { get; set; } = string.Empty;
 
 	[JsonProperty("assigned_date")]
 	public DateTimeOffset AssignedDate { get; set; }
@@ -44,8 +44,8 @@ public sealed class CopilotQuotaResponse
 	/// <summary>
 	/// eg: "business"
 	/// </summary>
-	[JsonProperty("copilot_plan")]	
-	public string CopilotPlan { get; set; }
+	[JsonProperty("copilot_plan")]
+	public string CopilotPlan { get; set; } = string.Empty;
 
 	[JsonProperty("editor_preview_features_enabled")]
 	public bool EditorPreviewFeaturesEnabled { get; set; }
@@ -54,10 +54,10 @@ public sealed class CopilotQuotaResponse
 	public bool IsMcpEnabled { get; set; }
 
 	[JsonProperty("organization_login_list")]
-	public string[] OrganizationLoginList { get; set; }
+	public string[] OrganizationLoginList { get; set; } = [];
 
 	[JsonProperty("organization_list")]
-	public OrganizationInfo[] OrganizationList { get; set; }
+	public OrganizationInfo[] OrganizationList { get; set; } = [];
 
 	[JsonProperty("restricted_telemetry")]
 	public bool RestrictedTelemetry { get; set; }
@@ -69,16 +69,16 @@ public sealed class CopilotQuotaResponse
 	public bool CliRemoteControlEnabled { get; set; }
 
 	[JsonProperty("endpoints")]
-	public CopilotEndpoints Endpoints { get; set; }
+	public CopilotEndpoints? Endpoints { get; set; }
 
 	[JsonProperty("can_upgrade_plan")]
 	public bool CanUpgradePlan { get; set; }
 
 	[JsonProperty("quota_reset_date")]
-	public string QuotaResetDate { get; set; }
+	public string QuotaResetDate { get; set; } = string.Empty;
 
 	[JsonProperty("quota_snapshots")]
-	public QuotaSnapshots QuotaSnapshots { get; set; }
+	public QuotaSnapshots QuotaSnapshots { get; set; } = new QuotaSnapshots();
 
 	[JsonProperty("quota_reset_date_utc")]
 	public DateTimeOffset QuotaResetDateUtc { get; set; }
