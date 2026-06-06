@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\icon_cokirby_v1.png" />
     <None Remove="Views\Resources\ConverterResources.xaml" />
     <None Remove="Views\Resources\DefaultMargins.xaml" />
     <None Remove="Views\Resources\StaticResources.xaml" />
@@ -58,12 +59,18 @@
   <ItemGroup>
     <None Include="../LICENSE.txt">
       <Link>Repository Files\LICENSE.txt</Link>
+      <CopyToOutputDirectory></CopyToOutputDirectory>
     </None>
+    <Content Include="Resources\icon_cokirby_v1.png">
+      <CopyToOutputDirectory></CopyToOutputDirectory>
+    </Content>
     <None Include="../README.md">
       <Link>Repository Files\README.md</Link>
+      <CopyToOutputDirectory></CopyToOutputDirectory>
     </None>
     <None Include="../.github/workflows/release.yml">
       <Link>Repository Files\release.yml</Link>
+      <CopyToOutputDirectory></CopyToOutputDirectory>
     </None>
   </ItemGroup>
 </Project>

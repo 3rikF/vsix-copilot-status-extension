@@ -1,31 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
-  <Metadata>
-    <Identity Id="CoPilotStatusExtension.292986ec-8e23-476a-a513-00c8405310b4" Version="1.0" Language="en-US" Publisher="Erik Forwerk" />
-    <DisplayName>CoPilot Status Extension</DisplayName>
-    <Description>Displays GitHub Copilot quota status in the Visual Studio status bar.</Description>
-    <MoreInfo>https://github.com/3rikF/vsix-copilot-status-extension</MoreInfo>
-    <License />
-    <Tags>copilot, github, status, quota</Tags>
-  </Metadata>
-  <Installation>
-    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.14, )">
-      <ProductArchitecture>amd64</ProductArchitecture>
-    </InstallationTarget>
+	<Metadata>
+		<Identity Id="CoPilotStatusExtension.292986ec-8e23-476a-a513-00c8405310b4" Version="1.0.2" Language="en-US" Publisher="Erik Forwerk" />
+		<DisplayName>CoPilot Status Extension</DisplayName>
+		<Description>Displays GitHub Copilot quota status in the Visual Studio status bar.</Description>
+		<MoreInfo>https://github.com/3rikF/vsix-copilot-status-extension</MoreInfo>
+		<Icon>Resources\icon_cokirby_v1.png</Icon>
+		<!--<License>LICENSE.txt</License>-->
+		<Tags>copilot, github, status, quota, visual-studio, extension, vsix, vsix-extension</Tags>
+	</Metadata>
+	<Installation>
+		<InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.14, )">
+			<ProductArchitecture>amd64</ProductArchitecture>
+		</InstallationTarget>
 		<InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[17.14, )">
 			<ProductArchitecture>amd64</ProductArchitecture>
 		</InstallationTarget>
 		<InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.14, )">
 			<ProductArchitecture>amd64</ProductArchitecture>
 		</InstallationTarget>
-  </Installation>
-  <Dependencies>
-    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
-  </Dependencies>
-  <Prerequisites>
-    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.14, )" DisplayName="Visual Studio core editor" />
-  </Prerequisites>
-  <Assets>
-    <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
-  </Assets>
+	</Installation>
+	<Dependencies>
+		<Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+	</Dependencies>
+	<Prerequisites>
+		<Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.14, )" DisplayName="Visual Studio core editor" />
+	</Prerequisites>
+	<Assets>
+		<Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+
+		<Asset Type="Microsoft.VisualStudio.VsPackage.Icon" d:Source="File" Path="Resources\icon_cokirby_v1.png" />
+		<!--<Asset Type="Microsoft.VisualStudio.VsPackage.License" d:Source="File" Path="LICENSE.txt" />-->
+	</Assets>
 </PackageManifest>
