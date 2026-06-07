@@ -57,8 +57,8 @@
     <Folder Include="Views\Resources\Images\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="../LICENSE.txt">
-      <Link>Repository Files\LICENSE.txt</Link>
+    <None Include="../LICENSE">
+      <Link>Repository Files\LICENSE</Link>
       <CopyToOutputDirectory></CopyToOutputDirectory>
     </None>
     <Content Include="Resources\icon_cokirby_v1.png">
