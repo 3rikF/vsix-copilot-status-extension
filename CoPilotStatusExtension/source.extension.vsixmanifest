@@ -10,13 +10,13 @@
 		<Tags>copilot, github, status, quota, visual-studio, extension, vsix, vsix-extension</Tags>
 	</Metadata>
 	<Installation>
-		<InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[18.5, )">
+		<InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.14, )">
 			<ProductArchitecture>amd64</ProductArchitecture>
 		</InstallationTarget>
-		<InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[18.5, )">
+		<InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[17.14, )">
 			<ProductArchitecture>amd64</ProductArchitecture>
 		</InstallationTarget>
-		<InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[18.5, )">
+		<InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.14, )">
 			<ProductArchitecture>amd64</ProductArchitecture>
 		</InstallationTarget>
 	</Installation>
