@@ -23,11 +23,11 @@ Clicking the status bar item opens a **detail popup** with a full breakdown of a
 
 ### 1 · Status Bar Item
 
-![Status Bar Item Light](docs/screenshots/status_bar_item_light.png) ![Status Bar Item Light Dark](docs/screenshots/status_bar_item_light_dark.png)
+![Status Bar Item Light](https://raw.githubusercontent.com/3rikF/vsix-copilot-status-extension/master/docs/screenshots/status_bar_item_light.png) ![Status Bar Item Light Dark](https://raw.githubusercontent.com/3rikF/vsix-copilot-status-extension/master/docs/screenshots/status_bar_item_light_dark.png)
 
 ### 2 · Detail Popup
 
-![Popup Light](docs/screenshots/popup_light.png) ![Popup Dark](docs/screenshots/popup_dark.png)
+![Popup Light](https://raw.githubusercontent.com/3rikF/vsix-copilot-status-extension/master/docs/screenshots/popup_light.png) ![Popup Dark](https://raw.githubusercontent.com/3rikF/vsix-copilot-status-extension/master/docs/screenshots/popup_dark.png)
 
 ## Features
 
@@ -109,4 +109,4 @@ Contributions are welcome! Please open an issue first to discuss what you would 
 
 ## License
 
-This project is licensed under the **MIT License** — see [LICENSE](LICENSE) for details.
+This project is licensed under the **MIT License** — see [LICENSE](https://raw.githubusercontent.com/3rikF/vsix-copilot-status-extension/master/LICENSE) for details.
