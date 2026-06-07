@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
 	<Metadata>
-		<Identity Id="CoPilotStatusExtension.292986ec-8e23-476a-a513-00c8405310b4" Version="1.0.2" Language="en-US" Publisher="Erik Forwerk" />
+		<Identity Id="CoPilotStatusExtension.292986ec-8e23-476a-a513-00c8405310b4" Version="1.0.2" Language="en-US" Publisher="3rikF" />
 		<DisplayName>CoPilot Status Extension</DisplayName>
 		<Description>Displays GitHub Copilot quota status in the Visual Studio status bar.</Description>
 		<MoreInfo>https://github.com/3rikF/vsix-copilot-status-extension</MoreInfo>
@@ -10,13 +10,13 @@
 		<Tags>copilot, github, status, quota, visual-studio, extension, vsix, vsix-extension</Tags>
 	</Metadata>
 	<Installation>
-		<InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.14, )">
+		<InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[18.5, )">
 			<ProductArchitecture>amd64</ProductArchitecture>
 		</InstallationTarget>
-		<InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[17.14, )">
+		<InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[18.5, )">
 			<ProductArchitecture>amd64</ProductArchitecture>
 		</InstallationTarget>
-		<InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.14, )">
+		<InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[18.5, )">
 			<ProductArchitecture>amd64</ProductArchitecture>
 		</InstallationTarget>
 	</Installation>
