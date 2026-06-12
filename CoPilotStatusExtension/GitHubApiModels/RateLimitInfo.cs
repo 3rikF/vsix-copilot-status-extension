@@ -24,7 +24,10 @@ public sealed class RateLimitInfo
 	/// <summary>The number of requests made in the current rate limit window.</summary>
 	public int Used { get; set; }
 
-	/// <summary>The time at which the current rate limit window resets (UTC).</summary>
+	/// <summary>
+	/// The time at which the current rate limit window resets.
+	/// This value is already in local time.
+	/// </summary>
 	public DateTime? Reset { get; set; }
 
 	/// <summary>The rate limit resource that the request counted against.</summary>
