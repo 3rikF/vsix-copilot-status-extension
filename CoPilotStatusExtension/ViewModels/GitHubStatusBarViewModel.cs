@@ -53,7 +53,7 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 		{ get;} = GetExtensionNameAndVersion();
 
 	/// <summary>
-	///
+	/// Premium interactions used as a fraction in the range [0, 1] (null if unavailable).
 	/// </summary>
 	public double? PremiumInteractionsUsedPercent
 		=> _personalQuota?.QuotaSnapshots?.PremiumInteractions?.PercentUsed;

@@ -12,7 +12,6 @@ using CoPilotStatusExtension.GitHubApiModels;
 using CoPilotStatusExtension.Models;
 using CoPilotStatusExtension.Views;
 
-using Microsoft;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -117,7 +116,7 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 				return;
 			}
 
-			await Task.Delay(1000);
+			await Task.Delay(1000, cancellationToken);
 		}
 	}
 

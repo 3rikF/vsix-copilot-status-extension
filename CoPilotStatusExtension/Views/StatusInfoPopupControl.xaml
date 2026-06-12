@@ -146,11 +146,6 @@
 		</ResourceDictionary>
 	</UserControl.Resources>
 
-	<!--<platformUI:FeedbackPanel />-->
-	<!--<platformUI:MarchingAntsProgressBar />-->
-	<!--<platformUI:SystemDropShadowChrome>
-		<TextBox Text="seserewr"/>
-	</platformUI:SystemDropShadowChrome>-->
 
 	<!-- ==== Content ================================================================================================================= -->
 	<Border
@@ -198,7 +193,7 @@
 					Margin			="{StaticResource SmallMarginTL}"
 					>
 
-					<Run Text="No user information were found."/>
+					<Run Text="No user information was found."/>
 					<LineBreak />
 					<Run Text="Unable to load quota data."/>
 
@@ -233,7 +228,6 @@
 							SnapsToDevicePixels	="True"
 							/>
 							<ProgressBar
-								x:Name="Test"
 								Style				="{StaticResource UsageProgressBarStyle}"
 								SnapsToDevicePixels	="True"
 								Background			="Transparent"
