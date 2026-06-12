@@ -14,7 +14,7 @@ file static class SimpleStaticTranslations
 	private readonly static Dictionary<string, string> TRANSLATIONS = new()
 	{
 		//--- account type ---
-		{ "individual",						"Individual"},
+		{"individual",						"Individual"},
 		{"business",						"Organization"},
 		{"enterprise",						"Enterprise"},
 

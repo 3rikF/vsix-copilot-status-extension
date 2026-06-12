@@ -179,6 +179,14 @@
 		Right		="0"
 		Bottom		="0" />
 
+	<Thickness
+		x:Key		="SmallMarginB"
+		ice:Freeze	="true"
+		Left		="0"
+		Top			="0"
+		Right		="0"
+		Bottom		="{StaticResource MarginSmall}" />
+
 	<!--#endregion Lesser Margins -->
 
 	<!-- === Small ================================================================================================ -->
@@ -207,6 +215,14 @@
 		Top			="{StaticResource MarginTiny}"
 		Right		="0"
 		Bottom		="0" />
+
+	<Thickness
+		x:Key		="TinyMarginB"
+		ice:Freeze	="true"
+		Left		="0"
+		Top			="0"
+		Right		="0"
+		Bottom		="{StaticResource MarginTiny}" />
 
 	<Thickness
 		x:Key		="TinyMarginTL"

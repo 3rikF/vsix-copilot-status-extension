@@ -18,6 +18,9 @@ public sealed class QuotaDetail
 	[JsonProperty("percent_remaining")]
 	public double PercentRemaining { get; set; }
 
+	[JsonIgnore]
+	public double PercentUsed => Math.Min(1d, Math.Max(0d, 1d - PercentRemaining));
+
 	[JsonProperty("quota_id")]
 	public string QuotaId { get; set; } = string.Empty;
 

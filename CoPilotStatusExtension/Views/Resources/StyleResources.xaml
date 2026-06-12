@@ -49,6 +49,8 @@
 		<Setter Property="Background"		Value="{StaticResource ProgressBackground}" />
 		<Setter Property="Foreground"		Value="{StaticResource BrushQuotaSave}" />
 		<Setter Property="BorderThickness"	Value="0" />
+		<Setter Property="Height"			Value="3" />
+
 
 		<Setter Property="d:Visibility"		Value="Visible" />
 		<Setter Property="d:Background"		Value="#FFA0A0A0" />

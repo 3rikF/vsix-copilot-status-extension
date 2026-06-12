@@ -1,4 +1,4 @@
-# CoPilot Status Extension
+# CoPilot Status
 
 > [!IMPORTANT]
 > **Copyright Notice**: 
@@ -8,7 +8,7 @@
 
 ## Overview
 
-**CoPilot Status Extension** is a Visual Studio extension (VSIX) that displays your **GitHub Copilot quota status** directly in the Visual Studio status bar — always visible, always up to date.
+**CoPilot Status** is a Visual Studio extension (VSIX) that displays your **GitHub Copilot quota status** directly in the Visual Studio status bar — always visible, always up to date.
 
 At a glance you can see:
 
@@ -54,7 +54,7 @@ Clicking the status bar item opens a **detail popup** with a full breakdown of a
 
 1. Open Visual Studio.
 2. Navigate to **Extensions → Manage Extensions**.
-3. Search for **"CoPilot Status Extension"**.
+3. Search for **"CoPilot Status"**.
 4. Click **Download** and restart Visual Studio.
 
 ### Via VSIX file

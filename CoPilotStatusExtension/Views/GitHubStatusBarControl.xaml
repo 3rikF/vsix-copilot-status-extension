@@ -137,7 +137,7 @@
 					<TextBlock.ToolTip>
 						<StackPanel>
 							<TextBlock
-								Text		="{Binding StatusToolTip}"
+								Text		="{Binding ExtensionNameAndVersion}"
 								FontWeight	="Bold"
 								/>
 
@@ -162,7 +162,7 @@
 									Text =" used, ↩ "/>
 
 								<TextBlock
-									Text ="{Binding ApiRateLimitInfo.Reset, Converter={StaticResource UtcToLocal}, Mode=OneWay, StringFormat=t}"/>
+									Text ="{Binding ApiRateLimitInfo.Reset, Mode=OneWay, StringFormat=t}"/>
 
 							</StackPanel>
 						</StackPanel>

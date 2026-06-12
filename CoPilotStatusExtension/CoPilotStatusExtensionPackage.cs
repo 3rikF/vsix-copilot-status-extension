@@ -105,14 +105,25 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 		//--- Initialize Controls -----------------------------------------------------------------
 		// When initialized asynchronously, the current thread may be a background thread at this point.
 		// Do any initialization that requires the UI thread after switching to the UI thread.
+
 		await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
-		if (FindStatusBar() is not StatusBar statusBar)
-			return;
+		for(int i = 0; i<10; i++)
+		{
+			if (FindStatusBar() is StatusBar statusBar)
+			{
+				InitializeInternal(statusBar);
+				return;
+			}
 
-		_statusControl	= new GitHubStatusBarControl();
+			await Task.Delay(1000, cancellationToken);
+		}
+	}
 
-		StatusBarItem item = new ()
+	private void InitializeInternal(StatusBar statusBar)
+	{
+		_statusControl		= new GitHubStatusBarControl();
+		StatusBarItem item	= new ()
 		{
 			Content						= _statusControl,
 			HorizontalAlignment			= HorizontalAlignment.Right,
@@ -132,17 +143,17 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 			_tokenManager = new CoPilotTokenManager(componentModel);
 
 			//--- initialize MEF end register [CopilotIdentityChanged] event-handler ---
-			_tokenManager.InitializeCopilotMef(OnMainWindowActivated);
+			_tokenManager.InitializeCopilotMef(OnRefreshGitHubStatus);
 
 			//--- refresh when the VS window regains focus ---
-			Application.Current.MainWindow.Activated += OnMainWindowActivated;
+			Application.Current.MainWindow.Activated += OnRefreshGitHubStatus;
 
 			//--- refresh after 60s fallback timer ---
 			_refreshTimer = new Timer( _ => _ = JoinableTaskFactory.RunAsync(RefreshGitHubStatusAsync), null, TimeSpan.FromSeconds(15), TimeSpan.FromSeconds(15));
 		}
 	}
 
-	private void OnMainWindowActivated(object? sender, EventArgs? e)
+	private void OnRefreshGitHubStatus(object? sender, EventArgs? e)
 	{
 		if (_tokenManager is null)
 			return;
@@ -166,7 +177,7 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 			if (copilotInfo is null || string.IsNullOrEmpty(copilotInfo.Username) || string.IsNullOrEmpty(copilotInfo.AccessToken))
 			{
 				await JoinableTaskFactory.SwitchToMainThreadAsync();
-				_statusControl.SetData(null, null, null, null);
+				_statusControl.SetData(copilotInfo, null, null, null);
 
 				return;
 			}
@@ -224,7 +235,7 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 			_refreshTimer?.Dispose();
 
 			if (Application.Current?.MainWindow is not  null)
-				Application.Current.MainWindow.Activated -= OnMainWindowActivated;
+				Application.Current.MainWindow.Activated -= OnRefreshGitHubStatus;
 
 			_tokenManager?.Dispose();
 
