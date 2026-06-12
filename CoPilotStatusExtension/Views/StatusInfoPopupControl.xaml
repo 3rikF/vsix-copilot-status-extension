@@ -255,16 +255,18 @@
 						DockPanel.Dock		="Right"
 						Style				="{StaticResource LinkButton}"
 						Margin				="{StaticResource TinyMarginTLBR}"
-						Tag					="https://github.com/settings/billing/premium_requests_usage"
-						Click				="OnUserProfileClick"
 						FontSize			="{StaticResource HeaderFontSize}"
 						FontFamily			="Segoe UI"
 						FontWeight			="DemiBold"
+						Click				="OnUserProfileClick"
+						Tag					="https://github.com/settings/billing/premium_requests_usage"
+						IsEnabled			="{Binding IsPrivateUser}"
 						>
 						<Button.Content>
 							<TextBlock
 								HorizontalAlignment	="Right"
-								Text ="{Binding PremiumInteractionsUsedPercent, Mode=OneWay, StringFormat='{}{0:P1}', TargetNullValue='n/a'}"
+								Text				="{Binding PremiumInteractionsUsedPercent, Mode=OneWay, StringFormat='{}{0:P1}', TargetNullValue='n/a'}"
+								d:Text				="42%"
 								>
 
 								<TextBlock.ToolTip>

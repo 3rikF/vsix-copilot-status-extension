@@ -43,6 +43,9 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 	public bool HasValidToken
 		=> !string.IsNullOrWhiteSpace(_personalQuota?.Login);
 
+	public bool IsPrivateUser
+		=> _personalQuota?.AccessTypeSku?.Equals("individual", StringComparison.OrdinalIgnoreCase) ?? false;
+
 	/// <summary>
 	/// The text shown in the status  bar item.
 	/// Contains either the username + percentage or a status like "Not Signed In".
