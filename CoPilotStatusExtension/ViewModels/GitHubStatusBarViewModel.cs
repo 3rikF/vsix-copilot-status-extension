@@ -44,7 +44,7 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 		=> !string.IsNullOrWhiteSpace(_personalQuota?.Login);
 
 	public bool IsPrivateUser
-		=> _personalQuota?.AccessTypeSku?.Equals("individual", StringComparison.OrdinalIgnoreCase) ?? false;
+		=> _personalQuota?.CopilotPlan?.Equals("individual", StringComparison.OrdinalIgnoreCase) ?? false;
 
 	/// <summary>
 	/// The text shown in the status  bar item.
