@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="CoPilotStatusExtension.292986ec-8e23-476a-a513-00c8405310b4" Version="1.2.1" Language="en-US" Publisher="3rikF" />
+    <Identity Id="CoPilotStatusExtension.292986ec-8e23-476a-a513-00c8405310b4" Version="1.2.2" Language="en-US" Publisher="3rikF" />
     <DisplayName>CoPilot Status</DisplayName>
     <Description>Displays GitHub Copilot quota status in the Visual Studio status bar.</Description>
     <MoreInfo>https://github.com/3rikF/vsix-copilot-status-extension</MoreInfo>
@@ -9,14 +9,18 @@
     <!--<License>LICENSE.txt</License>-->
     <Tags>copilot, github, status, quota, visual-studio, extension, vsix, vsix-extension</Tags>
   </Metadata>
+  <!--
+    The minimum supported version of Visual Studio required to install the extension has been lowered from
+    18.5 to 17.14 for the Community, Pro, and Enterprise editions (as currently required by the VS marketplace).
+  -->
   <Installation>
-    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[18.5,)">
+    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.14,)">
       <ProductArchitecture>amd64</ProductArchitecture>
     </InstallationTarget>
-    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[18.5,)">
+    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[17.14,)">
       <ProductArchitecture>amd64</ProductArchitecture>
     </InstallationTarget>
-    <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[18.5,)">
+    <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.14,)">
       <ProductArchitecture>amd64</ProductArchitecture>
     </InstallationTarget>
   </Installation>
@@ -24,7 +28,7 @@
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" Version="[4.5,)" d:Source="Manual" />
   </Dependencies>
   <Prerequisites>
-    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" DisplayName="Visual Studio core editor" Version="[18.5, )" />
+    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" DisplayName="Visual Studio core editor" Version="[17.14, )" />
   </Prerequisites>
   <Assets>
     <!--<Asset Type="Microsoft.VisualStudio.VsPackage.License" d:Source="File" Path="LICENSE.txt" />-->
