@@ -61,6 +61,34 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 	public double? PremiumInteractionsUsedPercent
 		=> _personalQuota?.QuotaSnapshots?.PremiumInteractions?.PercentUsed;
 
+	/// <summary>
+	/// Fraction of the current monthly premium-interactions period that has elapsed.
+	/// The quota API exposes the next reset instant, so the start of the period is
+	/// derived as the previous monthly reset.
+	/// </summary>
+	public double? CurrentPeriodElapsedPercent
+		=> CalculateCurrentPeriodElapsedPercent(PremiumInteractionsResetDateUtc, DateTimeOffset.UtcNow);
+
+	public string UsagePaceStatusText
+	{
+		get
+		{
+			if (PremiumInteractionsUsedPercent is not double usage
+				|| CurrentPeriodElapsedPercent is not double elapsed)
+			{
+				return string.Empty;
+			}
+
+			double difference = usage - elapsed;
+			if (Math.Abs(difference) < 0.005d)
+				return "On pace";
+
+			return difference > 0
+				? $"Ahead of pace by {difference:P1}"
+				: $"Behind pace by {-difference:P1}";
+		}
+	}
+
 	public IEnumerable<QuotaDetail> QuotaDetails
 	{
 		get
@@ -137,8 +165,54 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 		if (PremiumInteractionsUsedPercent is not null)
 			_ = sb.Append($": {PremiumInteractionsUsedPercent:P1}");
 
+#if DEBUG
+		_ = sb.Append(" [DEBUG]");
+#endif
+
 		//-------------------------------------------------
 		return sb.ToString();
+	}
+
+	private DateTimeOffset? PremiumInteractionsResetDateUtc
+	{
+		get
+		{
+			long quotaResetAt = _personalQuota?.QuotaSnapshots?.PremiumInteractions?.QuotaResetAt ?? 0;
+			if (quotaResetAt > 0)
+			{
+				try
+				{
+					return DateTimeOffset.FromUnixTimeSeconds(quotaResetAt);
+				}
+				catch (ArgumentOutOfRangeException)
+				{
+					// Fall back to the response-level reset date below.
+				}
+			}
+
+			DateTimeOffset responseResetDate = _personalQuota?.QuotaResetDateUtc ?? default;
+			return responseResetDate == default ? null : responseResetDate;
+		}
+	}
+
+	/// <summary>
+	/// Calculates the elapsed fraction of the monthly period ending at <paramref name="periodEnd"/>.
+	/// Kept independent of the system clock so its boundary behavior can be verified deterministically.
+	/// </summary>
+	internal static double? CalculateCurrentPeriodElapsedPercent(DateTimeOffset? periodEnd, DateTimeOffset now)
+	{
+		if (periodEnd is null)
+			return null;
+
+		DateTimeOffset periodStart = periodEnd.Value.AddMonths(-1);
+		if (now <= periodStart)
+			return 0d;
+
+		if (now >= periodEnd.Value)
+			return 1d;
+
+		return (now - periodStart).TotalSeconds
+			/ (periodEnd.Value - periodStart).TotalSeconds;
 	}
 
 	private static string GetExtensionNameAndVersion()

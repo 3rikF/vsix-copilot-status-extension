@@ -45,6 +45,16 @@
 		ice:Freeze	="true"
 		/>
 	<SolidColorBrush
+		x:Key		="BrushTimeMarker"
+		Color		="#FFFFC107"
+		ice:Freeze	="true"
+		/>
+	<SolidColorBrush
+		x:Key		="BrushTimeMarkerOutline"
+		Color		="#FF101010"
+		ice:Freeze	="true"
+		/>
+	<SolidColorBrush
 		x:Key		="BrushQuotaCritical"
 		Color		="{DynamicResource {x:Static vsshell:VsColors.VizSurfaceRedMediumKey}}"
 		Opacity		="0.8"
