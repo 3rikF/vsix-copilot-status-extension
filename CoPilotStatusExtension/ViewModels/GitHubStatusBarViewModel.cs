@@ -164,11 +164,6 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 		//-------------------------------------------------
 		if (PremiumInteractionsUsedPercent is not null)
 			_ = sb.Append($": {PremiumInteractionsUsedPercent:P1}");
-
-#if DEBUG
-		_ = sb.Append(" [DEBUG]");
-#endif
-
 		//-------------------------------------------------
 		return sb.ToString();
 	}

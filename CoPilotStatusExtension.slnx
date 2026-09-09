@@ -2,4 +2,5 @@
   <Project Path="CoPilotStatusExtension/CoPilotStatusExtension.csproj">
     <Deploy />
   </Project>
+  <Project Path="CoPilotStatusExtension.Tests/CoPilotStatusExtension.Tests.csproj" />
 </Solution>
