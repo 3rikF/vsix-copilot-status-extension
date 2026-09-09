@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 using CoPilotStatusExtension.ViewModels;
 using CoPilotStatusExtension.Views.Converters;
@@ -47,8 +48,8 @@ public sealed class GitHubStatusBarViewModelTests
 	{
 		PercentageToCanvasLeftConverter converter = new();
 
-		Assert.AreEqual(0d, converter.Convert([100d, 0d], typeof(double), "4", null));
-		Assert.AreEqual(48d, converter.Convert([100d, 0.5d], typeof(double), "4", null));
-		Assert.AreEqual(96d, converter.Convert([100d, 1d], typeof(double), "4", null));
+		Assert.AreEqual(0d, converter.Convert([100d, 0d], typeof(double), "4", CultureInfo.InvariantCulture));
+		Assert.AreEqual(48d, converter.Convert([100d, 0.5d], typeof(double), "4", CultureInfo.InvariantCulture));
+		Assert.AreEqual(96d, converter.Convert([100d, 1d], typeof(double), "4", CultureInfo.InvariantCulture));
 	}
 }
