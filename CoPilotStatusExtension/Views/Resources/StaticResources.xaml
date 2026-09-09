@@ -51,8 +51,7 @@
 		/>
 	<SolidColorBrush
 		x:Key		="BrushTimeMarkerOutline"
-		Color		="{DynamicResource {x:Static vsshell:VsColors.StatusBarTextKey}}"
-		Opacity		="0.45"
+		Color		="#FF101010"
 		ice:Freeze	="true"
 		/>
 	<SolidColorBrush
