@@ -9,6 +9,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 
 using CoPilotStatusExtension.GitHubApiModels;
+using CoPilotStatusExtension.Helper;
 using CoPilotStatusExtension.Models;
 using CoPilotStatusExtension.Views;
 
@@ -43,21 +44,20 @@ namespace CoPilotStatusExtension;
 [Guid(CoPilotStatusExtensionPackage.PACKAGE_GUID_STRING)]
 [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
 [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string,					PackageAutoLoadFlags.BackgroundLoad)]
+//[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string,				PackageAutoLoadFlags.BackgroundLoad)]
+//[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionOpening_string,			PackageAutoLoadFlags.BackgroundLoad)]
 [ProvideAutoLoad(VSConstants.UICONTEXT.EmptySolution_string,				PackageAutoLoadFlags.BackgroundLoad)]
 [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasMultipleProjects_string,	PackageAutoLoadFlags.BackgroundLoad)]
 [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasSingleProject_string,		PackageAutoLoadFlags.BackgroundLoad)]
 //--- do not auto-load when ---
 //[ProvideAutoLoad(VSConstants.UICONTEXT.DesignMode_string,					PackageAutoLoadFlags.BackgroundLoad)]
-//[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string,				PackageAutoLoadFlags.BackgroundLoad)]
 public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 {
 	//-----------------------------------------------------------------------------------------------------------------
 	#region Fields
 
-	/// <summary>
-	/// CoPilotStatusExtensionPackage GUID string.
-	/// </summary>
-	public const string PACKAGE_GUID_STRING = "86cc1277-85e2-4030-ba7f-ceb48452ad40";
+	public const string EXTENSION_NAME		= "Copilot Status Extension";
+	public const string PACKAGE_GUID_STRING	= "86cc1277-85e2-4030-ba7f-ceb48452ad40";
 
 	private Timer					_refreshTimer	= null!;
 	private GitHubStatusBarControl	_statusControl	= null!;
@@ -70,13 +70,6 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 
 	//-----------------------------------------------------------------------------------------------------------------
 	#region Visual Tree Helper
-
-	private static StatusBar? FindStatusBar()
-	{
-		return Application.Current?.MainWindow is Window mainWindow
-			? FindChild<StatusBar>(mainWindow)
-			: null;
-	}
 
 	private static T? FindChild<T>(DependencyObject parent) where T : DependencyObject
 	{
@@ -111,14 +104,86 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 	/// <returns>A task representing the async work of package initialization, or an already completed task if there is none. Do not return null from this method.</returns>
 	protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 	{
+		await ExtensionLogger.LogAsync($"Initializing {EXTENSION_NAME} v{VersionHelper.GetExtensionVersion("?.?.?")}");
+
+		await base.InitializeAsync(cancellationToken, progress);
 		await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
-		if (FindStatusBar() is { } statusBar)
-			InitializeInternal(statusBar);
+		await EnsureControlInStatusBarAsync();
 	}
 
-	private void InitializeInternal(StatusBar statusBar)
+	private async Task EnsureControlInStatusBarAsync()
 	{
+		if (Application.Current?.MainWindow is { } mainWindow)
+		{
+			await ExtensionLogger.LogAsync("Main window found");
+
+			//---- Case 1: Main window already exists and is loaded ----
+			if (mainWindow.IsLoaded)
+			{
+				await ExtensionLogger.LogAsync("Main window is already loaded: Injecting status bar control...");
+
+				await InjectStatusBarControlAsync(mainWindow);
+				return;
+			}
+
+			//---- Case 2: Main window exists but is not yet loaded ----
+			else
+			{
+				await ExtensionLogger.LogAsync("Main window is not yet loaded: Waiting for Loaded event...");
+
+				mainWindow.Loaded += async (s, e) => await InjectStatusBarControlAsync(mainWindow);
+				return;
+			}
+		}
+
+		//---- Case 3: Main window is still null (startup window is open) ----
+		// We wait until a window becomes active in WPF:
+		else
+		{
+			await ExtensionLogger.LogAsync("Main window is null: Waiting for application activation...");
+
+			EventHandler tmpActivatedHandler = null!;
+			tmpActivatedHandler = async (s, e) =>
+			{
+				try
+				{
+					await ExtensionLogger.LogAsync("Application activated: Checking for main window...");
+
+					if (Application.Current?.MainWindow is { } mainWindow)
+					{
+						Application.Current.Activated -= tmpActivatedHandler;
+
+						if (mainWindow.IsLoaded)
+						{
+							await ExtensionLogger.LogAsync("Main window is loaded: Injecting status bar control...");
+							InjectStatusBarControlAsync(mainWindow);
+						}
+						else
+						{
+							await ExtensionLogger.LogAsync("Main window not yet loaded: Waiting for Loaded event...");
+							mainWindow.Loaded += (ls, le) => InjectStatusBarControlAsync(mainWindow);
+						}
+					}
+				}
+				catch
+				{ }
+			};
+
+			Application.Current?.Activated += tmpActivatedHandler;
+		}
+	}
+
+	private async Task InjectStatusBarControlAsync(Window mainWindow)
+	{
+		if (FindChild<StatusBar>(mainWindow) is not { } statusBar)
+		{
+			await ExtensionLogger.LogAsync("Could not find StatusBar in the Visual Tree of the main window");
+			return;
+		}
+
+		await ExtensionLogger.LogAsync("StatusBar found: Injecting status bar control...");
+
 		_statusControl		= new GitHubStatusBarControl();
 		StatusBarItem item	= new ()
 		{
@@ -231,8 +296,8 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 		{
 			_refreshTimer?.Dispose();
 
-			if (Application.Current?.MainWindow is not  null)
-				Application.Current.MainWindow.Activated -= OnRefreshGitHubStatus;
+			//if (Application.Current?.MainWindow is not  null)
+			//	Application.Current.MainWindow.Activated -= OnRefreshGitHubStatus;
 
 			_tokenManager?.Dispose();
 
@@ -241,7 +306,7 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 			{
 				await JoinableTaskFactory.SwitchToMainThreadAsync();
 
-				if (FindStatusBar() is StatusBar statusBar)
+				if (FindChild<StatusBar>(Application.Current.MainWindow) is { } statusBar)
 				{
 					for (int i = statusBar.Items.Count - 1; i >= 0; i--)
 					{
