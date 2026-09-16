@@ -1,7 +1,7 @@
 ## Common Code Style and Formatting Rules
 
 - If available, generally follow the code-style defined in the ".editorconfig"-file (that should lie next to the current `*.sln` or `*.slnx` file) for basic C# code-style rules.
-- Use modern .NET 10+ / C# 14+ language features such as:
+- Use modern C# language features supported by the project's configured language version, and use APIs supported by the project's target framework.
 	- File-scoped namespaces
 	- Array- and collection-initializers
 	- Short-hand `new()`, generally prefer object creation formatting like `DataType data = new ();`
