@@ -146,7 +146,6 @@
 		</ResourceDictionary>
 	</UserControl.Resources>
 
-
 	<!-- ==== Content ================================================================================================================= -->
 	<Border
 		Background		="{DynamicResource {x:Static vsshell:VsBrushes.CommandBarMenuBackgroundGradientKey}}"
@@ -601,8 +600,9 @@
 												<TextBlock
 													FontWeight	="Bold"
 													Margin		="{StaticResource TinyMarginTL}"
+													ToolTip		="{Binding QuotaUsed, Mode=OneWay, StringFormat=F2}"
 													>
-													<Run Text ="{Binding QuotaUsed, Mode=OneWay}" d:Text="1200" />
+													<Run Text ="{Binding QuotaUsed, Mode=OneWay, StringFormat=0.#}" d:Text="1200" />
 													<Run Text ="of" />
 													<Run Text ="{Binding Entitlement, Mode=OneWay}" d:Text="3000"/>
 													<Run Text ="used" />

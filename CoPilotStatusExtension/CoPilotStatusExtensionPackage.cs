@@ -12,6 +12,7 @@ using CoPilotStatusExtension.GitHubApiModels;
 using CoPilotStatusExtension.Models;
 using CoPilotStatusExtension.Views;
 
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -39,9 +40,15 @@ namespace CoPilotStatusExtension;
 /// To get loaded into VS, the package must be referred by &lt;Asset Type="Microsoft.VisualStudio.VsPackage" ...&gt; in .vsixmanifest file.
 /// </para>
 /// </remarks>
-[PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-[ProvideAutoLoad(UIContextGuids80.NoSolution, PackageAutoLoadFlags.BackgroundLoad)]
 [Guid(CoPilotStatusExtensionPackage.PACKAGE_GUID_STRING)]
+[PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
+[ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string,					PackageAutoLoadFlags.BackgroundLoad)]
+[ProvideAutoLoad(VSConstants.UICONTEXT.EmptySolution_string,				PackageAutoLoadFlags.BackgroundLoad)]
+[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasMultipleProjects_string,	PackageAutoLoadFlags.BackgroundLoad)]
+[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasSingleProject_string,		PackageAutoLoadFlags.BackgroundLoad)]
+//--- do not auto-load when ---
+//[ProvideAutoLoad(VSConstants.UICONTEXT.DesignMode_string,					PackageAutoLoadFlags.BackgroundLoad)]
+//[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string,				PackageAutoLoadFlags.BackgroundLoad)]
 public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 {
 	//-----------------------------------------------------------------------------------------------------------------
@@ -59,7 +66,6 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 
 	private readonly SemaphoreSlim _semaphore		= new(1, 1);
 
-
 	#endregion Fields
 
 	//-----------------------------------------------------------------------------------------------------------------
@@ -67,13 +73,16 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 
 	private static StatusBar? FindStatusBar()
 	{
-		return Application.Current?.MainWindow is not Window mainWindow
-			? null
-			: FindChild<StatusBar>(mainWindow);
+		return Application.Current?.MainWindow is Window mainWindow
+			? FindChild<StatusBar>(mainWindow)
+			: null;
 	}
 
 	private static T? FindChild<T>(DependencyObject parent) where T : DependencyObject
 	{
+		if (parent is null)
+			return null;
+
 		for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
 		{
 			DependencyObject child = VisualTreeHelper.GetChild(parent, i);
@@ -102,22 +111,10 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 	/// <returns>A task representing the async work of package initialization, or an already completed task if there is none. Do not return null from this method.</returns>
 	protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 	{
-		//--- Initialize Controls -----------------------------------------------------------------
-		// When initialized asynchronously, the current thread may be a background thread at this point.
-		// Do any initialization that requires the UI thread after switching to the UI thread.
-
 		await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
-		for(int i = 0; i<10; i++)
-		{
-			if (FindStatusBar() is StatusBar statusBar)
-			{
-				InitializeInternal(statusBar);
-				return;
-			}
-
-			await Task.Delay(1000, cancellationToken);
-		}
+		if (FindStatusBar() is { } statusBar)
+			InitializeInternal(statusBar);
 	}
 
 	private void InitializeInternal(StatusBar statusBar)
@@ -138,7 +135,7 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 		//--- Initialize GitHub MEF ---------------------------------------------------------------
 		_gitHubService	= new GitHubApiService();
 
-		if (GetGlobalService(typeof(SComponentModel)) is  IComponentModel componentModel)
+		if (GetGlobalService(typeof(SComponentModel)) is IComponentModel componentModel)
 		{
 			_tokenManager = new CoPilotTokenManager(componentModel);
 
