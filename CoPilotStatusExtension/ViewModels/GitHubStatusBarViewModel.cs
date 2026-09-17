@@ -4,14 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Xml.Linq;
 
 using CoPilotStatusExtension.GitHubApiModels;
+using CoPilotStatusExtension.Helper;
 using CoPilotStatusExtension.Models;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -22,8 +19,6 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 {
 	//-----------------------------------------------------------------------------------------------------------------
 	#region Fields
-
-	private const string EXTENSION_NAME = "Copilot Status Extension";
 
 	private string _statusText		= string.Empty;
 
@@ -53,7 +48,7 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 	public string StatusText
 		=> _statusText;
 	public string ExtensionNameAndVersion
-		{ get;} = GetExtensionNameAndVersion();
+		{ get;} = $"{CoPilotStatusExtensionPackage.EXTENSION_NAME} v{VersionHelper.GetExtensionVersion("?.?.?")}";
 
 	/// <summary>
 	/// Premium interactions used as a fraction in the range [0, 1] (null if unavailable).
@@ -139,40 +134,6 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 
 		//-------------------------------------------------
 		return sb.ToString();
-	}
-
-	private static string GetExtensionNameAndVersion()
-	{
-		try
-		{
-			Assembly assembly = typeof(GitHubStatusBarViewModel).Assembly;
-			string resourceName = assembly.GetManifestResourceNames()
-				.FirstOrDefault(r => r.EndsWith("source.extension.vsixmanifest"));
-
-			if (resourceName is null)
-				return EXTENSION_NAME;
-
-			using Stream stream = assembly.GetManifestResourceStream(resourceName);
-			if (stream is null)
-				return EXTENSION_NAME;
-
-			XDocument doc = XDocument.Load(stream);
-			XNamespace ns = "http://schemas.microsoft.com/developer/vsx-schema/2011";
-
-			string? version = doc.Root?
-				.Element(ns + "Metadata")?
-				.Element(ns + "Identity")?
-				.Attribute("Version")?
-				.Value;
-
-			return !string.IsNullOrEmpty(version)
-				? $"{EXTENSION_NAME} v{version}"
-				: EXTENSION_NAME;
-		}
-		catch
-		{
-			return EXTENSION_NAME;
-		}
 	}
 
 	#endregion Methods
