@@ -171,8 +171,10 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 						}
 					}
 				}
-				catch
-				{ }
+				catch (Exception ex)
+				{
+					await ExtensionLogger.LogAsync(ex.ToString());
+				}
 			};
 
 			Application.Current?.Activated += tmpActivatedHandler;

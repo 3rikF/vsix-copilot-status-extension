@@ -1,10 +1,9 @@
 ﻿
+using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
-
-using CoPilotStatusExtension.ViewModels;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 namespace CoPilotStatusExtension.Helper;
@@ -16,10 +15,9 @@ public static class VersionHelper
 	{
 		try
 		{
-			Assembly assembly = typeof(GitHubStatusBarViewModel).Assembly;
-			string resourceName = assembly.GetManifestResourceNames()
-				.FirstOrDefault(r => r.EndsWith("source.extension.vsixmanifest"));
-
+			Assembly assembly = typeof(VersionHelper).Assembly;
+			string? resourceName = assembly.GetManifestResourceNames()
+				.FirstOrDefault(r => r.EndsWith("source.extension.vsixmanifest", StringComparison.OrdinalIgnoreCase));
 			if (resourceName is null)
 				return fallBack;
 
