@@ -15,6 +15,7 @@ At a glance you can see:
 - Your GitHub **username**
 - The **percentage of premium interactions used** (e.g. GPT-4o, Claude Sonnet …)
 - A **progress bar** in the status bar that fills as your quota is consumed
+- A **time marker** on the progress bar showing how much of the current monthly quota period has elapsed
 
 Clicking the status bar item opens a **detail popup** with a full breakdown of all quota categories.
 
@@ -25,7 +26,11 @@ Clicking the status bar item opens a **detail popup** with a full breakdown of a
 
 ![Status Bar Item Light](https://raw.githubusercontent.com/3rikF/vsix-copilot-status-extension/master/docs/screenshots/status_bar_item_light.png) ![Status Bar Item Light Dark](https://raw.githubusercontent.com/3rikF/vsix-copilot-status-extension/master/docs/screenshots/status_bar_item_light_dark.png)
 
-### 2 · Detail Popup
+### 2 · Time Marker
+
+![Status bar with elapsed-period marker](docs/screenshots/time_marker_dark.png)
+
+### 3 · Detail Popup
 
 ![Popup Light](https://raw.githubusercontent.com/3rikF/vsix-copilot-status-extension/master/docs/screenshots/popup_light.png) ![Popup Dark](https://raw.githubusercontent.com/3rikF/vsix-copilot-status-extension/master/docs/screenshots/popup_dark.png)
 
@@ -35,6 +40,7 @@ Clicking the status bar item opens a **detail popup** with a full breakdown of a
 |---|---|
 | 🟢 **Status bar integration** | Lightweight item in the VS status bar — no tool window needed |
 | 📊 **Usage progress bar** | Thin bar below the status text fills proportionally to quota consumed |
+| ⏱️ **Time marker** | Vertical marker shows elapsed time in the current quota period, making usage pace easy to compare at a glance |
 | 💬 **Detail popup** | Click to expand a full quota breakdown per category |
 | 🎨 **Theme-aware** | Adapts automatically to the active Visual Studio color theme (Light / Dark / High Contrast) |
 | 🔄 **Auto-refresh** | Periodically polls the GitHub Copilot API for up-to-date quota data |
