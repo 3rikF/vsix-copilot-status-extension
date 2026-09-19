@@ -19,6 +19,8 @@ public sealed class PercentageToCanvasLeftConverter : IMultiValueConverter
 			|| values[1] is not double percentage
 			|| double.IsNaN(width)
 			|| double.IsInfinity(width)
+			|| double.IsNaN(percentage)
+			|| double.IsInfinity(percentage)
 			|| width <= 0)
 		{
 			return 0d;

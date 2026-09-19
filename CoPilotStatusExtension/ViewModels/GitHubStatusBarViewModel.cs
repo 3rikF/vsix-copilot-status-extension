@@ -169,25 +169,25 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 	}
 
 	private DateTimeOffset? PremiumInteractionsResetDateUtc
-	{
-		get
-		{
-			long quotaResetAt = _personalQuota?.QuotaSnapshots?.PremiumInteractions?.QuotaResetAt ?? 0;
-			if (quotaResetAt > 0)
-			{
-				try
-				{
-					return DateTimeOffset.FromUnixTimeSeconds(quotaResetAt);
-				}
-				catch (ArgumentOutOfRangeException)
-				{
-					// Fall back to the response-level reset date below.
-				}
-			}
+		=> GetPremiumInteractionsResetDateUtc(_personalQuota);
 
-			DateTimeOffset responseResetDate = _personalQuota?.QuotaResetDateUtc ?? default;
-			return responseResetDate == default ? null : responseResetDate;
+	internal static DateTimeOffset? GetPremiumInteractionsResetDateUtc(CopilotQuotaResponse? personalQuota)
+	{
+		long quotaResetAt = personalQuota?.QuotaSnapshots?.PremiumInteractions?.QuotaResetAt ?? 0;
+		if (quotaResetAt > 0)
+		{
+			try
+			{
+				return DateTimeOffset.FromUnixTimeSeconds(quotaResetAt);
+			}
+			catch (ArgumentOutOfRangeException)
+			{
+				// Fall back to the response-level reset date below.
+			}
 		}
+
+		DateTimeOffset responseResetDate = personalQuota?.QuotaResetDateUtc ?? default;
+		return responseResetDate == default ? null : responseResetDate;
 	}
 
 	/// <summary>
