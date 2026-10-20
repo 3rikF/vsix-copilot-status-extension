@@ -29,6 +29,13 @@ Clicking the status bar item opens a **detail popup** with a full breakdown of a
 
 ![Popup Light](https://raw.githubusercontent.com/3rikF/vsix-copilot-status-extension/master/docs/screenshots/popup_light.png) ![Popup Dark](https://raw.githubusercontent.com/3rikF/vsix-copilot-status-extension/master/docs/screenshots/popup_dark.png)
 
+### 3 · Output Tool Window Category
+
+Since v1.3.0, the extension also adds a **Copilot Status Extension** category to the Visual Studio **Output** tool window,
+which currently logs the startup sequence.
+
+![Output](docs/screenshots/output.png)
+
 ## Features
 
 | Feature | Description |
@@ -89,7 +96,7 @@ CoPilotStatusExtension/
     ├── StatusInfoPopupControl.xaml     # Detail popup
     ├── Converters/                     # WPF value converters
     ├── ThemeManagers/                  # Visual Studio theme integration
-    └── Resources/                     # Styles, margins, converter resources
+    └── Resources/                      # Styles, margins, converter resources
 ```
 
 ## Building from Source
