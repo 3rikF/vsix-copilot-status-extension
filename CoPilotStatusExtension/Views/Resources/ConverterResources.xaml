@@ -32,6 +32,7 @@
 	<conv:IsGreaterThenConverter			x:Key="IsGreaterThen" />
 
 	<conv:ProgressSegmentBrushConverter		x:Key="ProgressSegmentBrush" />
+	<conv:PercentageToCanvasLeftConverter	x:Key="PercentageToCanvasLeft" />
 
 	<!-- ==== Special/unique Stuff ==== -->
 	<!--
