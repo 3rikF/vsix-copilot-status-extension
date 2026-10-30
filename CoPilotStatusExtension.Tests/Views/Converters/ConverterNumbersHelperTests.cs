@@ -4,6 +4,7 @@
 using CoPilotStatusExtension.Views.Converters;
 
 using Xunit;
+using Xunit.Abstractions;
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 namespace CoPilotStatusExtension.Tests.Views.Converters;

@@ -22,4 +22,4 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Test Solution
-        run: dotnet test CoPilotStatusExtension.slnx --configuration Release --verbosity normal
+        run: dotnet test CoPilotStatusExtension.slnx --configuration Release --verbosity normal -p:TestingPlatformDotnetTestSupport=true
