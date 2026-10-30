@@ -68,21 +68,65 @@
 			>
 
 
-			<ProgressBar
+			<Grid
 				DockPanel.Dock="Bottom"
-				Style			="{StaticResource UsageProgressBarStyle}"
-				Visibility		="{Binding PremiumInteractionsUsedPercent, Converter={StaticResource NullToVisibility}}"
-				Margin			="0"
-				Padding			="0"
-				Height			="3"
+				Height			="5"
+				>
 
-				Value			="{Binding PremiumInteractionsUsedPercent, Mode=OneWay, TargetNullValue=0}"
+				<ProgressBar
+					Style			="{StaticResource UsageProgressBarStyle}"
+					Visibility		="{Binding PremiumInteractionsUsedPercent, Converter={StaticResource NullToVisibility}}"
+					Margin			="0"
+					Padding			="0"
+					Height			="3"
+					VerticalAlignment="Bottom"
 
-				d:Visibility	="Visible"
-				d:Background	="#FFA0A0A0"
-				d:Foreground	="LightGray"
-				d:Value			="{StaticResource PreviewProgress}"
-				/>
+					Value			="{Binding PremiumInteractionsUsedPercent, Mode=OneWay, TargetNullValue=0}"
+
+					d:Visibility	="Visible"
+					d:Background	="#FFA0A0A0"
+					d:Foreground	="LightGray"
+					d:Value			="{StaticResource PreviewProgress}"
+					/>
+
+				<Canvas
+					Panel.ZIndex="1"
+					>
+					<Grid
+						Width			="4"
+						Height			="5"
+						Visibility	="{Binding CurrentPeriodElapsedPercent, Converter={StaticResource NullToVisibility}}"
+						>
+						<Grid.ToolTip>
+							<StackPanel>
+								<TextBlock Text="{Binding CurrentPeriodElapsedPercent, StringFormat='Time elapsed: {0:P1}'}" />
+								<TextBlock Text="{Binding PremiumInteractionsUsedPercent, StringFormat='Quota used: {0:P1}'}" />
+								<TextBlock Text="{Binding UsagePaceStatusText}" />
+							</StackPanel>
+						</Grid.ToolTip>
+						<Canvas.Left>
+							<MultiBinding Converter="{StaticResource PercentageToCanvasLeft}" ConverterParameter="4">
+								<Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType=Canvas}" />
+								<Binding Path="CurrentPeriodElapsedPercent" />
+							</MultiBinding>
+						</Canvas.Left>
+						<Rectangle
+							Width			="4"
+							Height			="5"
+							HorizontalAlignment="Center"
+							VerticalAlignment	="Bottom"
+							Fill			="{StaticResource BrushTimeMarkerOutline}"
+							/>
+						<Rectangle
+							Width			="2"
+							Height			="5"
+							HorizontalAlignment="Center"
+							VerticalAlignment	="Bottom"
+							Fill			="{StaticResource BrushTimeMarker}"
+							/>
+					</Grid>
+					</Canvas>
+			</Grid>
 
 			<StackPanel
 				Orientation	 ="Horizontal">
