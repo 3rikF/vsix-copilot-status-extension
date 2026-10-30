@@ -20,12 +20,7 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 	//-----------------------------------------------------------------------------------------------------------------
 	#region Fields
 
-	private string _statusText		= string.Empty;
-
-	private CopilotUserInfo?		_basicCopilotUserInfo;
 	private CopilotBillingUsage?	_githubBillingUsage;
-	private CopilotQuotaResponse?	_personalQuota;
-	private RateLimitInfo?			_apiRateLimit;
 
 	#endregion Fields
 
@@ -33,20 +28,21 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 	#region UI Bindable Properties
 
 	public bool HasValidUser
-		=> !string.IsNullOrWhiteSpace(_personalQuota?.Login ?? _basicCopilotUserInfo?.Username);
+		=> !string.IsNullOrWhiteSpace(PersonalInfo?.Login ?? AccountInfo?.Username);
 
 	public bool HasValidToken
-		=> !string.IsNullOrWhiteSpace(_personalQuota?.Login);
+		=> !string.IsNullOrWhiteSpace(PersonalInfo?.Login);
 
 	public bool IsPrivateUser
-		=> _personalQuota?.CopilotPlan?.Equals("individual", StringComparison.OrdinalIgnoreCase) ?? false;
+		=> PersonalInfo?.CopilotPlan?.Equals("individual", StringComparison.OrdinalIgnoreCase) ?? false;
 
 	/// <summary>
 	/// The text shown in the status  bar item.
 	/// Contains either the username + percentage or a status like "Not Signed In".
 	/// </summary>
 	public string StatusText
-		=> _statusText;
+		{ get; private set; } = string.Empty;
+
 	public string ExtensionNameAndVersion
 		{ get;} = $"{CoPilotStatusExtensionPackage.EXTENSION_NAME} v{VersionHelper.GetExtensionVersion("?.?.?")}";
 
@@ -54,7 +50,7 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 	/// Premium interactions used as a fraction in the range [0, 1] (null if unavailable).
 	/// </summary>
 	public double? PremiumInteractionsUsedPercent
-		=> _personalQuota?.QuotaSnapshots?.PremiumInteractions?.PercentUsed;
+		=> PersonalInfo?.QuotaSnapshots?.PremiumInteractions?.PercentUsed;
 
 	/// <summary>
 	/// Fraction of the current monthly premium-interactions period that has elapsed.
@@ -88,34 +84,34 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 	{
 		get
 		{
-			if (_personalQuota?.QuotaSnapshots is null)
+			if (PersonalInfo?.QuotaSnapshots is null)
 				yield break;
 
-			if (_personalQuota.QuotaSnapshots.PremiumInteractions is not null)
-				yield return _personalQuota.QuotaSnapshots.PremiumInteractions;
+			if (PersonalInfo.QuotaSnapshots.PremiumInteractions is not null)
+				yield return PersonalInfo.QuotaSnapshots.PremiumInteractions;
 
-			if (_personalQuota.QuotaSnapshots.Chat is not null)
-				yield return _personalQuota.QuotaSnapshots.Chat;
+			if (PersonalInfo.QuotaSnapshots.Chat is not null)
+				yield return PersonalInfo.QuotaSnapshots.Chat;
 
-			if (_personalQuota.QuotaSnapshots.Completions is not null)
-				yield return _personalQuota.QuotaSnapshots.Completions;
+			if (PersonalInfo.QuotaSnapshots.Completions is not null)
+				yield return PersonalInfo.QuotaSnapshots.Completions;
 		}
 	}
 
 	public CopilotUserInfo? AccountInfo
-		=> _basicCopilotUserInfo;
+		{get; private set; } = null;
 
 	public CopilotQuotaResponse? PersonalInfo
-		=> _personalQuota;
+		{get; private set; } = null;
 
 	public RateLimitInfo? ApiRateLimitInfo
-		=> _apiRateLimit;
+		{get; private set; } = null;
 
 	public string? UserProfileUrl
 	{
 		get
 		{
-			string? login = _personalQuota?.Login;
+			string? login = PersonalInfo?.Login;
 			return string.IsNullOrEmpty(login)
 				? null
 				: $"https://github.com/{login}";
@@ -129,12 +125,12 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 
 	public void SetData(CopilotUserInfo? copilotUserInfo, CopilotBillingUsage? billingUsage, CopilotQuotaResponse? personalQuota, RateLimitInfo? apiRateLimit)
 	{
-		_basicCopilotUserInfo	= copilotUserInfo;
+		AccountInfo				= copilotUserInfo;
 		_githubBillingUsage		= billingUsage;
-		_personalQuota			= personalQuota;
-		_apiRateLimit			= apiRateLimit;
+		PersonalInfo			= personalQuota;
+		ApiRateLimitInfo		= apiRateLimit;
 
-		_statusText				= GetStatusText();
+		StatusText				= GetStatusText();
 
 		RaiseAllPropertyChanged();
 	}
@@ -144,14 +140,14 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 		StringBuilder sb = new();
 
 		//-------------------------------------------------
-		string? userName = _personalQuota?.Login
-			?? _basicCopilotUserInfo?.Username;
+		string? userName = PersonalInfo?.Login
+			?? AccountInfo?.Username;
 
 		if (!string.IsNullOrEmpty(userName))
 			_ = sb.Append(userName);
 
 		//-------------------------------------------------
-		else if (_basicCopilotUserInfo?.Status?.Equals("NotSignedInToGitHub", StringComparison.OrdinalIgnoreCase) == true)
+		else if (AccountInfo?.Status?.Equals("NotSignedInToGitHub", StringComparison.OrdinalIgnoreCase) == true)
 			_ = sb.Append("Not signed in");
 		else
 			_ = sb.Append("Status not available");
@@ -164,7 +160,7 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 	}
 
 	private DateTimeOffset? PremiumInteractionsResetDateUtc
-		=> GetPremiumInteractionsResetDateUtc(_personalQuota);
+		=> GetPremiumInteractionsResetDateUtc(PersonalInfo);
 
 	internal static DateTimeOffset? GetPremiumInteractionsResetDateUtc(CopilotQuotaResponse? personalQuota)
 	{
@@ -213,7 +209,9 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 	protected bool SetProperty<T>(ref T field, T newValue, [CallerMemberName] string propertyName = "")
 	{
 		if (Equals(field, newValue))
+		{
 			return false;
+		}
 
 		else
 		{
@@ -227,7 +225,9 @@ public class GitHubStatusBarViewModel : INotifyPropertyChanged
 	protected bool SetProperty<T>(ref T field, T newValue, params string[] additionalDependentProperties)
 	{
 		if (Equals(field, newValue))
+		{
 			return false;
+		}
 
 		else
 		{

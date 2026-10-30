@@ -1,4 +1,6 @@
 ﻿
+// ignore spelling: sku
+
 using System.Collections.Generic;
 
 using Newtonsoft.Json;
@@ -14,7 +16,7 @@ public sealed class PremiumRequestUsageResult
 	public int OverageQuantity { get; set; }
 	public decimal TotalNetAmount { get; set; }
 	public string? ErrorMessage { get; set; }
-	public List<PremiumRequestUsageItem> Items { get; set; } = new();
+	public List<PremiumRequestUsageItem> Items { get; set; } = [];
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------

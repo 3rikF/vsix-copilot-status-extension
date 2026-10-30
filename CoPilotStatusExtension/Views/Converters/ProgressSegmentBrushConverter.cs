@@ -41,7 +41,7 @@ internal class ProgressSegmentBrushConverter : IValueConverter
 		if (ConverterNumbersHelper.TryGetNumber(parameter, out dynamic opacityParameter) && opacityParameter is >=0.0 and <=1.0)
 			opacity = (double)opacityParameter;
 
-		var brush = new LinearGradientBrush
+		LinearGradientBrush brush = new ()
 		{
 			StartPoint	= new System.Windows.Point(0, 0.5),
 			EndPoint	= new System.Windows.Point(1, 0.5),
