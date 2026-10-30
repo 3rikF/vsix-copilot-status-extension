@@ -56,9 +56,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Views\Resources\Images\" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="../LICENSE">
       <Link>Repository Files\LICENSE</Link>
       <CopyToOutputDirectory></CopyToOutputDirectory>
@@ -73,8 +70,8 @@
     <None Include="../.github/workflows/release.yml">
       <Link>Repository Files\release.yml</Link>
       <CopyToOutputDirectory></CopyToOutputDirectory>
-    </None>  
-	<None Include="../.github/workflows/ci.yml">
+    </None>
+    <None Include="../.github/workflows/ci.yml">
       <Link>Repository Files\ci.yml</Link>
       <CopyToOutputDirectory></CopyToOutputDirectory>
     </None>
