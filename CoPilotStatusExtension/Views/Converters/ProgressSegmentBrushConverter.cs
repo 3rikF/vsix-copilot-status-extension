@@ -19,9 +19,9 @@ namespace CoPilotStatusExtension.Views.Converters;
 internal class ProgressSegmentBrushConverter : IValueConverter
 {
 	// Segment boundaries (0–1 scale)
-	private const double SEG1_END = 0.50;   // 0–50 %
-	private const double SEG2_END = 0.75;   // 50–75 %
-	// SEG3_END = 1.0                        // 75–100 %
+	private const double SEG1_END = 0.50;		// 0–50 %
+	private const double SEG2_END = 0.75;		// 50–75 %
+	// SEG3_END = 1.0							// 75–100 %
 
 	private static readonly Color COLOR_SEG1  = Colors.ForestGreen;
 	private static readonly Color COLOR_SEG2  = Colors.Orange;
@@ -41,7 +41,7 @@ internal class ProgressSegmentBrushConverter : IValueConverter
 		if (ConverterNumbersHelper.TryGetNumber(parameter, out dynamic opacityParameter) && opacityParameter is >=0.0 and <=1.0)
 			opacity = (double)opacityParameter;
 
-		var brush = new LinearGradientBrush
+		LinearGradientBrush brush = new ()
 		{
 			StartPoint	= new System.Windows.Point(0, 0.5),
 			EndPoint	= new System.Windows.Point(1, 0.5),

@@ -36,7 +36,7 @@ file static class SimpleStaticTranslations
 
 	public static string Translate(string key)
 	{
-		if (TRANSLATIONS.TryGetValue(key, out var value))
+		if (TRANSLATIONS.TryGetValue(key, out string value))
 			return value;
 		else
 			return $"Unknown [{key}]";

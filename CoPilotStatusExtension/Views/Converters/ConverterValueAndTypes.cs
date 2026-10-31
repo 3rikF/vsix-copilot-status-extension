@@ -8,7 +8,7 @@ namespace CoPilotStatusExtension.Views.Converters;
 //-----------------------------------------------------------------------------------------------------------------------------------------
 //public sealed class UnixMillisecondsToDateTimeConverter : IValueConverter
 //{
-//	public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+//	public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 //	{
 //		if (ConverterNumbersHelper.TryGetNumber(value, out dynamic number))
 //		{
@@ -21,14 +21,14 @@ namespace CoPilotStatusExtension.Views.Converters;
 //			return Binding.DoNothing;
 //	}
 //
-//	public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+//	public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 //		=> throw new NotSupportedException();
 //}
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 public sealed class UtcToLocalConverter : IValueConverter
 {
-	public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+	public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 	{
 		if (value is DateTime dateTime)
 			return dateTime.ToLocalTime();
@@ -39,14 +39,14 @@ public sealed class UtcToLocalConverter : IValueConverter
 		else
 			return Binding.DoNothing;
 	}
-	public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+	public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 		=> throw new NotSupportedException();
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
 public sealed class BoolToTextConverter : IValueConverter
 {
-	public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+	public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 	{
 		if (value is not bool boolean)
 			return Binding.DoNothing;

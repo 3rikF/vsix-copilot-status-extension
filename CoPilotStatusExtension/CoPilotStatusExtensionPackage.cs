@@ -313,7 +313,7 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 			//		.FetchUserBillingUsageAsync(copilotInfo.Username, copilotInfo.AccessToken)
 			//		.ConfigureAwait(false);
 
-			//--- reset all double percentage values from [0-100] to [0-1] for easier binding in the UI ---
+			//--- reset all double percentage values from [0-100] to [0-1] for a more convenient binding in the UI ---
 			if (billingUsage is not null)
 			{
 				billingUsage.TotalNetAmount /= 100;
@@ -327,7 +327,7 @@ public sealed class CoPilotStatusExtensionPackage : AsyncPackage
 				.FetchUserChatUsageAsync(copilotInfo.AccessToken)
 				.ConfigureAwait(false);
 
-			//--- reset all double percentage values from [0-100] to [0-1] for easier binding in the UI ---
+			//--- reset all double percentage values from [0-100] to [0-1] for more convenient binding in the UI ---
 			if (personalQuota?.QuotaSnapshots is not null)
 			{
 				personalQuota.QuotaSnapshots.Chat.PercentRemaining /= 100;

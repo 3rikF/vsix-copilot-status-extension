@@ -1,8 +1,8 @@
 
+// ignore spelling: vsix api
+
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -58,7 +58,9 @@ internal sealed class GitHubApiService
 			string serializedJsonPayload	= await res.Content.ReadAsStringAsync().ConfigureAwait(false);
 
 			if (!res.IsSuccessStatusCode)
+			{
 				return ((int)res.StatusCode, res.ReasonPhrase, result);
+			}
 
 			else
 			{
@@ -102,7 +104,9 @@ internal sealed class GitHubApiService
 		RateLimitInfo? rateLimit		= RateLimitInfo.FromHeaders(res.Headers);
 
 		if (!res.IsSuccessStatusCode)
+		{
 			return ((int)res.StatusCode, res.ReasonPhrase, null, rateLimit);
+		}
 		else
 		{
 			return
@@ -134,7 +138,6 @@ internal sealed class GitHubApiService
 		HttpRequestMessage req = new(method, url);
 		req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 		req.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
-		//req.Headers.Add("X-GitHub-Api-Version", "2022-11-28");
 		req.Headers.Add("X-GitHub-Api-Version", "2026-03-10");
 		return req;
 	}

@@ -23,14 +23,10 @@ public sealed class CoPilotTokenManager(IComponentModel? componentModel) : IDisp
 	#region Fields
 
 	private readonly IComponentModel? _componentModel = componentModel;
-
 	private object? _copilotTokenManager = null;
 	private EventHandler? _updateStatsEventHandler = null;
 
 	#endregion Fields
-	#region Construction
-
-	#endregion Construction
 
 	//-----------------------------------------------------------------------------------------------------------------
 	#region Private Methods

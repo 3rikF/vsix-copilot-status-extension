@@ -1,4 +1,6 @@
 ﻿
+// ignore spelling: sku cli signup mcp
+
 using System;
 
 using Newtonsoft.Json;
