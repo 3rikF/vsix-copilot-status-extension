@@ -116,7 +116,11 @@ cd vsix-copilot-status-extension\CoPilotStatusExtension
 
 The build produces a `.vsix` file in the `bin\` output directory.
 
-## Contributing
+## Contributors
+
+- [3rikF](https://github.com/3rikF) / [ErikForwerk](https://github.com/ErikForwerk)
+- [alexandrelugand](https://github.com/alexandrelugand)
+- [hybrid2102](https://github.com/hybrid2102)
 
 Contributions are welcome! Please open an issue first to discuss what you would like to change.
 
