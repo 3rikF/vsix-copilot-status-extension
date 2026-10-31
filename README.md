@@ -28,7 +28,7 @@ Clicking the status bar item opens a **detail popup** with a full breakdown of a
 
 ### 2 · Time Marker
 
-![Status bar with elapsed-period marker](docs/screenshots/time_marker_dark.png)
+![Status bar with elapsed-period marker](https://raw.githubusercontent.com/3rikF/vsix-copilot-status-extension/master/docs/screenshots/time_marker_dark.png)
 
 ### 3 · Detail Popup
 
@@ -39,7 +39,7 @@ Clicking the status bar item opens a **detail popup** with a full breakdown of a
 Since v1.3.0, the extension also adds a **Copilot Status Extension** category to the Visual Studio **Output** tool window,
 which currently logs the startup sequence.
 
-![Output](docs/screenshots/output.png)
+![Output](https://raw.githubusercontent.com/3rikF/vsix-copilot-status-extension/master/docs/screenshots/output.png)
 
 ## Features
 
